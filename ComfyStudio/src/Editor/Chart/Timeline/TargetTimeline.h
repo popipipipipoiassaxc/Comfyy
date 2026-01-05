@@ -185,6 +185,8 @@ namespace Comfy::Studio::Editor
 		void UpdateInputTargetPlacement();
 		bool UpdateInputRangedPlacement();
 		void UpdateInputContextMenu();
+		void StartEditingEvent();
+		void UpdateEditEvent();
 		void UpdateInputBoxSelection();
 
 	private:

@@ -85,6 +85,7 @@ namespace Comfy::Studio::Editor
 		rows.push_back(TimelineRow("Star", ButtonType::Star));
 		rows.push_back(TimelineRow("Chance / Challenge Time", ButtonType::Count));
 		rows.push_back(TimelineRow("Technical Zone", ButtonType::Count));
+		rows.push_back(TimelineRow("Lyric Timing", ButtonType::Count));
 
 		rowPositions.resize(rows.size());
 	}
@@ -1443,6 +1444,11 @@ namespace Comfy::Studio::Editor
 				color = 0x4020B9FA;
 				secondaryColor = 0xFF146BF7;
 				break;
+			case EventKind::Lyrics:
+				sprintf_s(nameBuffer, "Lyric #%zu", ++lyricCount);
+				color = 0x40777777;
+				secondaryColor = 0xFFF0F0F0;
+				break;
 			}
 
 			DrawEventSection(event, nameBuffer, color, secondaryColor);
@@ -2401,7 +2407,9 @@ namespace Comfy::Studio::Editor
 				if (Gui::MenuItem("Technical Zone", "", nullptr, !isBlocked(EventKind::TechnicalZone)))
 					undoManager.Execute<AddEvent>(*workingChart, TimedEvent(EventKind::TechnicalZone, startTick, endTick));
 
-				if (Gui::MenuItem("Lyric", "", nullptr, !isBlocked(EventKind::Lyrics) && false)) { }
+				if (Gui::MenuItem("Lyric", "", nullptr, !isBlocked(EventKind::Lyrics))) {
+					undoManager.Execute<AddEvent>(*workingChart, TimedEvent(EventKind::Lyrics, startTick, endTick));
+				}
 
 				Gui::EndMenu();
 			}
@@ -2414,7 +2422,34 @@ namespace Comfy::Studio::Editor
 				undoManager.Execute<RemoveEvent>(*workingChart, event);
 			}
 
+			if (Gui::MenuItem("Edit Event", "", nullptr, rightClickHoveredEventID != -1)) {
+				workingEventID = rightClickHoveredEventID;
+
+				StartEditingEvent();
+			}
+			if (workingEventID != -1)
+				UpdateEditEvent();
+
 			Gui::EndPopup();
+		}
+	}
+
+	void TargetTimeline::StartEditingEvent() {
+		TimedEvent& event = workingChart->Events[workingChart->Events.FindIndex(workingEventID)];
+
+		if (event.Kind == EventKind::Lyrics) {
+			Gui::OpenPopup("##LyricEditPopup");
+		}
+	}
+
+	void TargetTimeline::UpdateEditEvent() {
+		TimedEvent& event = workingChart->Events[workingChart->Events.FindIndex(workingEventID)];
+
+		if (event.Kind == EventKind::Lyrics) {
+			Gui::SetNextWindowSize(vec2(500, 500));
+			if (Gui::WideBeginPopup("##LyricEditPopup")) {
+				Gui::Text("Imagine here a lyric editor.");
+			}
 		}
 	}
 

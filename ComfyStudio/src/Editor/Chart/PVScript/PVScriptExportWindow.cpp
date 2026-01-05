@@ -259,7 +259,8 @@ namespace Comfy::Studio::Editor
 				}
 				else if (lyrics)
 				{
-					// TODO: Add LYRIC command
+					scriptBuilder.Add(startTime, PVCommandLayout::Lyric(lyricIndex, -1));
+					scriptBuilder.Add(endTime, PVCommandLayout::Lyric(0, -1));
 				}
 			}
 

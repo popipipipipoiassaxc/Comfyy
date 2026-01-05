@@ -440,6 +440,15 @@ namespace Comfy
 			constexpr ModeSelect(u32 flags, i32 type) : DifficultyFlags(flags), ModeType(type) {}
 		};
 
+		struct Lyric : LayoutBase<Lyric, PVCommandType::Lyric>
+		{
+			i32 LyricID;
+			i32 Color;
+
+			Lyric() = default;
+			constexpr Lyric(i32 id, i32 color) : LyricID(id), Color(color) {}
+		};
+
 		struct BarTimeSet : LayoutBase<BarTimeSet, PVCommandType::BarTimeSet>
 		{
 			i32 BeatsPerMinute;
