@@ -1363,7 +1363,7 @@ namespace Comfy::Studio::Editor
 
 	void ChartEditor::GuiPVScriptExportPopup()
 	{
-		constexpr const char* pvScriptExportWindowID = "Export PV Script MData (Experimental)";
+		constexpr const char* pvScriptExportWindowID = "Export MM+ Mod (Experimental)";
 		if (pvScriptExportPopup.OpenOnNextFrame)
 		{
 			Gui::OpenPopup(pvScriptExportWindowID);

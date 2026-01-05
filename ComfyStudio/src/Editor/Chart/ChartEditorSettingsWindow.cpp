@@ -1564,7 +1564,7 @@ namespace Comfy::Studio::Editor
 			{ &userData.Input.ChartEditor_ImportUPDCChart, "Chart Editor - Import UPDC Chart" },
 			{ &userData.Input.ChartEditor_ImportPVScriptChart, "Chart Editor - Import PV Script Chart" },
 			{ &userData.Input.ChartEditor_ExportUPDCChart, "Chart Editor - Export UPDC Chart" },
-			{ &userData.Input.ChartEditor_ExportMegaMixMod, "Chart Editor - Export PV Script MData" },
+			{ &userData.Input.ChartEditor_ExportMegaMixMod, "Chart Editor - Export MegaMix+ Mod" },
 			{ &userData.Input.ChartEditor_ExportPVScriptChart, "Chart Editor - Export PV Script Chart" },
 			{ &userData.Input.ChartEditor_Undo, "Chart Editor - Undo" },
 			{ &userData.Input.ChartEditor_Redo, "Chart Editor - Redo" },
