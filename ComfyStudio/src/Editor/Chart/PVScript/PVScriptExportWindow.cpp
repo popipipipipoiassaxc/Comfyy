@@ -418,9 +418,6 @@ namespace Comfy::Studio::Editor
 			// HACK: To get things up and runnig quickly
 			Chart* hackyMutableChart = const_cast<Chart*>(&chart);
 			char buffer[32];
-			tryAdd(hackyMutableChart->Properties.Image.Cover.GetTexSprView(), std::string_view(buffer, sprintf_s(buffer, "SONG_JK%03d", pvID)), ivec2(500, 500), resizeBuffers[0]);
-			tryAdd(hackyMutableChart->Properties.Image.Logo.GetTexSprView(), std::string_view(buffer, sprintf_s(buffer, "SONG_LOGO%03d", pvID)), ivec2(860, 300), resizeBuffers[1]);
-			tryAdd(hackyMutableChart->Properties.Image.Background.GetTexSprView(), std::string_view(buffer, sprintf_s(buffer, "SONG_BG%03d", pvID)), ivec2(1280, 720), resizeBuffers[2]);
 
 			auto sprSet = sprPacker.Create(sprMarkups);
 
@@ -464,21 +461,23 @@ namespace Comfy::Studio::Editor
 			}
 		}
 
-		void AsyncTasksExportChartToMData(const PVExportWindowInputData& inData, const PVMDataExportParam& inParam, PVExportTasks& outTasks, PVExportAtomicProgress& outProgress)
+		void AsyncTasksExportChartToMod(const PVExportWindowInputData& inData, const PVMDataExportParam& inParam, PVExportTasks& outTasks, PVExportAtomicProgress& outProgress)
 		{
 			static constexpr Database::DateEntry startDate = { 2021, 1, 1 }, endDate = { 2029, 1, 1 };
-
-			IO::Directory::Create(inParam.OutMDataDirectory);
-			IO::Directory::Create(inParam.OutMDataRomDirectory);
-			IO::Directory::Create(inParam.OutMDataRom2DDirectory);
+			
+			IO::Directory::Create(inParam.OutModRomDirectory);
+			IO::Directory::Create(inParam.OutModScriptDirectory);
+			IO::Directory::Create(inParam.OutModSoundDirectory);
+			IO::Directory::Create(inParam.OutModSoundSongDirectory);
+			IO::Directory::Create(inParam.OutModMovieDirectory);
 
 			outTasks.push_back(std::async(std::launch::async, [&inData, &inParam, &outProgress]()
 			{
-				IO::File::WriteAllText(inParam.OutMDataInfo,
-					"#mdata_info\n"
-					"depend.length=0\n"
-					"version=20161030\n");
-				outProgress.MDataInfo = 1.0f;
+				IO::File::WriteAllText(inParam.OutModConfig,
+					"enabled=true\n"
+					"name=\"Comfy Exported Mod\"\n"
+					"version=\"1.0\"\n");
+				outProgress.ModConfig = 1.0f;
 			}));
 
 			outTasks.push_back(std::async(std::launch::async, [&inData, &inParam, &outProgress]()
@@ -551,7 +550,7 @@ namespace Comfy::Studio::Editor
 				std::string pvDB;
 				pvDB.reserve(0x800);
 				pvDB.append("\n\n");
-				pvDB.append("# --- COMFY STUDIO MDATA EXPORT: ---\n");
+				pvDB.append("# --- COMFY STUDIO MOD EXPORT: ---\n");
 				pvDB.append(b, sprintf_s(b, "pv_%03d.bpm=%d\n", inParam.OutPVID, static_cast<i32>(inData.Chart->TempoMap.FindNewOrInheritedAt(0).Tempo.BeatsPerMinute)));
 				pvDB.append(b, sprintf_s(b, "pv_%03d.chainslide_failure_name=", inParam.OutPVID)).append(chainSlideFailureName).append("\n");
 				pvDB.append(b, sprintf_s(b, "pv_%03d.chainslide_first_name=", inParam.OutPVID)).append(chainSlideFirstName).append("\n");
@@ -566,7 +565,7 @@ namespace Comfy::Studio::Editor
 				pvDB.append(b, sprintf_s(b, "pv_%03d.difficulty.%s.0.edition=%d\n", inParam.OutPVID, pvDifficultyString, static_cast<i32>(pvDifficultyEdition)));
 				pvDB.append(b, sprintf_s(b, "pv_%03d.difficulty.%s.0.level=%s\n", inParam.OutPVID, pvDifficultyString, IndexOr(static_cast<u8>(inData.Chart->Properties.Difficulty.Level), Database::PVDifficultyLevelNames, "")));
 				pvDB.append(b, sprintf_s(b, "pv_%03d.difficulty.%s.0.level_sort_index=%d\n", inParam.OutPVID, pvDifficultyString, 50));
-				pvDB.append(b, sprintf_s(b, "pv_%03d.difficulty.%s.0.script_file_name=rom/", inParam.OutPVID, pvDifficultyString)).append(IO::Path::GetFileName(inParam.OutDsc)).append("\n");
+				pvDB.append(b, sprintf_s(b, "pv_%03d.difficulty.%s.0.script_file_name=rom/script/", inParam.OutPVID, pvDifficultyString)).append(IO::Path::GetFileName(inParam.OutDsc)).append("\n");
 				pvDB.append(b, sprintf_s(b, "pv_%03d.difficulty.%s.0.script_format=0x%X\n", inParam.OutPVID, pvDifficultyString, static_cast<u32>(PVScriptVersion::FT)));
 				pvDB.append(b, sprintf_s(b, "pv_%03d.difficulty.%s.0.version=%d\n", inParam.OutPVID, pvDifficultyString, 1));
 				pvDB.append(b, sprintf_s(b, "pv_%03d.difficulty.%s.length=%d\n", inParam.OutPVID, pvDifficultyString, 1));
@@ -581,7 +580,7 @@ namespace Comfy::Studio::Editor
 
 				if (!inParam.OutMovie.empty())
 				{
-					pvDB.append(b, sprintf_s(b, "pv_%03d.movie_file_name=rom/", inParam.OutPVID)).append(IO::Path::GetFileName(inParam.OutMovie)).append("\n");
+					pvDB.append(b, sprintf_s(b, "pv_%03d.movie_file_name=rom/movie/", inParam.OutPVID)).append(IO::Path::GetFileName(inParam.OutMovie)).append("\n");
 					pvDB.append(b, sprintf_s(b, "pv_%03d.movie_pv_type=ONLY\n", inParam.OutPVID));
 					pvDB.append(b, sprintf_s(b, "pv_%03d.movie_surface=FRONT\n", inParam.OutPVID));
 				}
@@ -601,7 +600,7 @@ namespace Comfy::Studio::Editor
 				pvDB.append(b, sprintf_s(b, "pv_%03d.se_name=", inParam.OutPVID)).append(buttonSourceName).append("\n");
 				pvDB.append(b, sprintf_s(b, "pv_%03d.slide_name=", inParam.OutPVID)).append(slideSourceName).append("\n");
 				pvDB.append(b, sprintf_s(b, "pv_%03d.slidertouch_name=", inParam.OutPVID)).append(sliderTouchName).append("\n");
-				pvDB.append(b, sprintf_s(b, "pv_%03d.song_file_name=rom/", inParam.OutPVID)).append(inData.Chart->SongFileName.empty() ? "dummy.ogg" : IO::Path::GetFileName(inParam.OutOgg)).append("\n");
+				pvDB.append(b, sprintf_s(b, "pv_%03d.song_file_name=rom/sound/song/", inParam.OutPVID)).append(inData.Chart->SongFileName.empty() ? "dummy.ogg" : IO::Path::GetFileName(inParam.OutOgg)).append("\n");
 				pvDB.append(b, sprintf_s(b, "pv_%03d.song_name=", inParam.OutPVID)).append(inData.Chart->SongTitleOrDefault()).append("\n");
 				pvDB.append(b, sprintf_s(b, "pv_%03d.song_name_reading=%s\n", inParam.OutPVID, ""));
 				pvDB.append(b, sprintf_s(b, "pv_%03d.songinfo.arranger=%s\n", inParam.OutPVID, inData.Chart->Properties.Song.Arranger.c_str()));
@@ -613,137 +612,8 @@ namespace Comfy::Studio::Editor
 				pvDB.append("# --- COMFY STUDIO EXPORT END ---\n");
 
 				outProgress.PVDB = 0.1f;
-
-				if (inParam.MergeWithExistingMData && !inParam.InMergeBaseMDataPVDB.empty())
-				{
-					auto forEachPVDBLine = [](std::string_view pvDB, auto perLineReturnFalseToStopFunc)
-					{
-						for (size_t absoulteIndex = 0; absoulteIndex < pvDB.size(); absoulteIndex++)
-						{
-							const std::string_view remainingPVDB = pvDB.substr(absoulteIndex);
-							for (size_t relativeIndex = 0; relativeIndex < remainingPVDB.size(); relativeIndex++)
-							{
-								if (remainingPVDB[relativeIndex] == '\n')
-								{
-#if 0 // BUG: The old code wasn't behaving correctly and checking for \n\r instead of the windows \r\n..?
-									const std::string_view line = remainingPVDB.substr(0, relativeIndex);
-									if (relativeIndex + 1 < remainingPVDB.size() && remainingPVDB[relativeIndex + 1] == '\r')
-										relativeIndex++;
-#else
-									const std::string_view line = remainingPVDB.substr(0, (relativeIndex > 0 && remainingPVDB[relativeIndex - 1] == '\r') ? (relativeIndex - 1) : relativeIndex);
-#endif
-
-									if (!line.empty() && line[0] != '#' && !perLineReturnFalseToStopFunc(line))
-										return;
-
-									absoulteIndex += relativeIndex;
-									break;
-								}
-							}
-						}
-					};
-
-					std::string basePVDB = IO::File::ReadAllText(inParam.InMergeBaseMDataPVDB);
-					outProgress.PVDB = 0.5f;
-
-					char pvUnderscoreIDBuffer[16];
-					const auto pvUnderscoreIDStr = std::string_view(pvUnderscoreIDBuffer, sprintf_s(pvUnderscoreIDBuffer, "pv_%03d", inParam.OutPVID));
-
-					std::string_view lineToInsertAfter = {};
-					forEachPVDBLine(basePVDB, [&](std::string_view line)
-					{
-						if (line.size() > 6 && Util::StartsWith(line, "pv_"))
-						{
-							if (line.substr(0, 6) < pvUnderscoreIDStr)
-								lineToInsertAfter = line;
-							else
-								return false;
-						}
-
-						return true;
-					});
-
-					std::string combinedPVDB = std::move(basePVDB);
-					if (lineToInsertAfter.data() != nullptr)
-					{
-						const size_t insertionIndex = static_cast<size_t>(lineToInsertAfter.data() - &combinedPVDB.front()) + lineToInsertAfter.size();
-						combinedPVDB.insert(insertionIndex, pvDB);
-					}
-					else
-					{
-						combinedPVDB.append(pvDB);
-					}
-					outProgress.PVDB = 0.8f;
-
-					IO::File::WriteAllText(inParam.OutMDataPVDB, combinedPVDB);
-				}
-				else
-				{
-					IO::File::WriteAllText(inParam.OutMDataPVDB, pvDB);
-				}
+				IO::File::WriteAllText(inParam.OutModPVDB, pvDB);
 				outProgress.PVDB = 1.0f;
-			}));
-
-			outTasks.push_back(std::async(std::launch::async, [&inData, &inParam, &outProgress]()
-			{
-				const auto[pvDifficulty, pvDifficultyEdition] = DifficultyToPVDifficultyTypeAndEdition(inData.Chart->Properties.Difficulty.Type);
-
-				std::unique_ptr<Database::GmPvListDB> pvList;
-				if (inParam.MergeWithExistingMData && !inParam.InMergeBasePVListFArc.empty())
-					pvList = IO::File::Load<Database::GmPvListDB>(inParam.InMergeBasePVListFArc + "<gm_pv_list.bin>");
-				if (pvList == nullptr)
-					pvList = std::make_unique<Database::GmPvListDB>();
-				outProgress.PVList = 0.3f;
-
-				auto& newPvListEntry = pvList->Entries.emplace_back();
-				newPvListEntry.ID = inParam.OutPVID;
-				newPvListEntry.Ignore = true;
-				newPvListEntry.Name = inData.Chart->SongTitleOrDefault();
-				newPvListEntry.AdvDemoStartDate = { 2009, 1, 1 };
-				newPvListEntry.AdvDemoEndDate = { 2009, 1, 1 };
-				auto& difficultyEditions = newPvListEntry.Difficulties[static_cast<size_t>(pvDifficulty)];
-				difficultyEditions.Count = 1;
-				difficultyEditions.Editions[0].StartDate = startDate;
-				difficultyEditions.Editions[0].EndDate = endDate;
-				difficultyEditions.Editions[0].Edition = pvDifficultyEdition;
-				difficultyEditions.Editions[0].Version = 1;
-
-				IO::FArcPacker farcPacker;
-				farcPacker.AddFile("gm_pv_list.bin", *pvList);
-				outProgress.PVList = 0.6f;
-				farcPacker.CreateFlushFArc(inParam.OutPVListFArc, false);
-				outProgress.PVList = 1.0f;
-			}));
-
-			outTasks.push_back(std::async(std::launch::async, [&inData, &inParam, &outProgress]()
-			{
-				if (inParam.CreateSprSelPV)
-				{
-					// TODO: Update progress inside...?
-					auto selPVSprSet = CreateChartSelPVSprSet(*inData.Chart, inParam.OutPVID);
-					outProgress.Sprites = 0.5f;
-
-					std::unique_ptr<Database::SprDB> sprDB = nullptr;
-					if (inParam.MergeWithExistingMData && !inParam.InMergeBaseMDataSprDB.empty())
-						sprDB = IO::File::Load<Database::SprDB>(inParam.InMergeBaseMDataSprDB);
-					if (sprDB == nullptr)
-						sprDB = std::make_unique<Database::SprDB>();
-
-					GenerateChartSelPVSprDBEntries(*inData.Chart, inParam.OutPVID, *selPVSprSet, *sprDB);
-					outProgress.Sprites = 0.7f;
-
-					IO::FArcPacker farcPacker;
-					farcPacker.AddFile(sprDB->Entries.back().FileName, *selPVSprSet);
-					farcPacker.CreateFlushFArc(inParam.OutSprSelPVFArc, true);
-					outProgress.Sprites = 0.9f;
-
-					IO::File::Save(inParam.OutMDataSprDB, *sprDB);
-					outProgress.Sprites = 1.0f;
-				}
-				else
-				{
-					outProgress.Sprites = 1.0f;
-				}
 			}));
 		}
 	}
@@ -838,14 +708,10 @@ namespace Comfy::Studio::Editor
 
 	PVScriptExportWindow::PVScriptExportWindow()
 	{
-		param.OutFormat = PVExportFormat::Arcade;
-		param.OutMDataID = { "MYEP" };
 		param.OutPVID = 911;
 		param.PVScriptBackgroundTint = vec4(0.0f, 0.0f, 0.0f, 0.35f);
-		param.MergeWithExistingMData = true;
-		param.CreateSprSelPV = true;
 		// TODO: What should be the default (?)
-		param.VorbisVBRQuality = 0.8f;
+		param.VorbisVBRQuality = 0.7f;
 	}
 
 	PVScriptExportWindow::~PVScriptExportWindow()
@@ -885,28 +751,11 @@ namespace Comfy::Studio::Editor
 						guiSameLineRightAlignedHintText(description);
 				};
 
-				guiHeaderLabel("Export Target");
-				{
-					Gui::PushItemWidth(Gui::GetContentRegionAvail().x);
-					if (Gui::BeginCombo("##ExportFormat", PVExportFormatNames[static_cast<u8>(param.OutFormat)]))
-					{
-						for (size_t i = 0; i < EnumCount<PVExportFormat>(); i++)
-						{
-							const auto format = static_cast<PVExportFormat>(i);
-							if (Gui::Selectable(PVExportFormatNames[i], format == param.OutFormat, !IsPVExportFormatSupported(format) ? ImGuiSelectableFlags_Disabled : ImGuiSelectableFlags_None))
-								param.OutFormat = format;
-						}
-						Gui::EndCombo();
-					}
-					Gui::PopItemWidth();
-				}
-				Gui::Separator();
-
-				guiHeaderLabel("Game Root Directory", "(Containing diva.exe and rom + mdata subdirectories)");
+				guiHeaderLabel("Output Directory", "Folder where mod files will be placed.");
 				{
 					PathTextInputWithBrowserButton(param.RootDirectory, "\"...\" to select a folder", [&](std::string& inOutPath)
 					{
-						if (auto p = OpenSelectFolderDialog("Select Root Directory"); !p.empty())
+						if (auto p = OpenSelectFolderDialog("Select Mod Directory"); !p.empty())
 						{
 							inOutPath = p;
 							return true;
@@ -919,32 +768,12 @@ namespace Comfy::Studio::Editor
 				}
 				Gui::Separator();
 
-				guiHeaderLabel("Output MData ID", "(Expected to be highest priority)");
-				{
-					static auto isValidIDChar = [](char c) { return !(!(c >= '0' && c <= '9') && !(c >= 'A' && c <= 'Z') && !(c >= 'a' && c <= 'z')); };
-					static auto validIDCharTextCallbackFilter = [](ImGuiInputTextCallbackData* data) -> int { return !isValidIDChar(static_cast<char>(data->EventChar)); };
-
-					for (char& c : param.OutMDataID)
-						c = isValidIDChar(c) ? c : '0';
-					param.OutMDataID[0] = 'M';
-					param.OutMDataID[4] = '\0';
-					Gui::PushItemWidth(Gui::GetContentRegionAvail().x);
-					Gui::InputText("##MDataID", param.OutMDataID.data(), param.OutMDataID.size(),
-						ImGuiInputTextFlags_CharsUppercase |
-						ImGuiInputTextFlags_CharsNoBlank |
-						ImGuiInputTextFlags_AutoSelectAll |
-						ImGuiInputTextFlags_CallbackCharFilter |
-						ImGuiInputTextFlags_AlwaysOverwrite,
-						validIDCharTextCallbackFilter);
-					Gui::PopItemWidth();
-				}
-				Gui::Separator();
-
 				guiHeaderLabel("Output PV ID", "(Expected to be unused)");
 				{
 					Gui::PushItemWidth(Gui::GetContentRegionAvail().x);
-					if (i32 step = 1, stepFast = 100; Gui::InputScalar("##PVID", ImGuiDataType_S32, &param.OutPVID, &step, &stepFast, "%03d", ImGuiInputTextFlags_None))
-						param.OutPVID = Clamp(param.OutPVID, 1, 999);
+					i32 step = 1;
+					i32 stepFast = 100;
+					Gui::InputScalar("##PVID", ImGuiDataType_S32, &param.OutPVID, &step, &stepFast, "%d", ImGuiInputTextFlags_None);
 					Gui::PopItemWidth();
 				}
 				Gui::Separator();
@@ -954,10 +783,6 @@ namespace Comfy::Studio::Editor
 				if (auto v = ToPercent(param.PVScriptBackgroundTint.a); Gui::SliderFloat("##BackgroundDim", &v, 0.0f, 100.0f, "%.0f%%"))
 					param.PVScriptBackgroundTint.a = FromPercent(v);
 				Gui::PopItemWidth();
-				Gui::Separator();
-
-				Gui::Checkbox("Merge with Existing MData", &param.MergeWithExistingMData); guiSameLineRightAlignedHintText("(Copy existing DBs for compatibility)");
-				Gui::Checkbox("Export Image Sprites", &param.CreateSprSelPV); guiSameLineRightAlignedHintText("(Cover, Logo, Background)");
 				Gui::Separator();
 
 				const bool isOggFile = (inData.Chart->SongFileName.empty() || HasOggExtension(inData.Chart->SongFileName));
@@ -990,10 +815,10 @@ namespace Comfy::Studio::Editor
 				Gui::AlignTextToFramePadding();
 				Gui::TextColored(Gui::ColorConvertU32ToFloat4(GetColor(EditorColor_RedText, 0.95f)), "WARNING: ");
 				Gui::SameLine(0.0f, 0.0f);
-				Gui::TextColored(Gui::ColorConvertU32ToFloat4(Gui::GetColorU32(ImGuiCol_Text, 0.9f)), "Existing data inside the output MData directory will be *overwritten*");
+				Gui::TextColored(Gui::ColorConvertU32ToFloat4(Gui::GetColorU32(ImGuiCol_Text, 0.9f)), "Existing data inside the output mod directory will be *overwritten*");
 
 				Gui::PushItemDisabledAndTextColorIf(param.RootDirectory.empty());
-				if (Gui::Button("Export MData", vec2((Gui::GetContentRegionAvail().x - Gui::GetStyle().ItemSpacing.x) * 0.5f, Gui::GetContentRegionAvail().y)))
+				if (Gui::Button("Export Mod", vec2((Gui::GetContentRegionAvail().x - Gui::GetStyle().ItemSpacing.x) * 0.5f, Gui::GetContentRegionAvail().y)))
 				{
 					StartAsyncExport(inData);
 				}
@@ -1038,7 +863,7 @@ namespace Comfy::Studio::Editor
 					Gui::TextUnformatted("  Movie"); Gui::ProgressBar(progress.Movie);
 					Gui::TextUnformatted("  Sprite"); Gui::ProgressBar(progress.Sprites);
 					Gui::TextUnformatted("  Script"); Gui::ProgressBar(progress.Script);
-					Gui::TextUnformatted("  MData Info"); Gui::ProgressBar(progress.MDataInfo);
+					Gui::TextUnformatted("  MData Info"); Gui::ProgressBar(progress.ModConfig);
 					Gui::TextUnformatted("  PV DB"); Gui::ProgressBar(progress.PVDB);
 					Gui::TextUnformatted("  PV List"); Gui::ProgressBar(progress.PVList);
 				}
@@ -1099,31 +924,33 @@ namespace Comfy::Studio::Editor
 		isCurrentlyAsyncExporting = true;
 		asyncAccessedWindowInputData = inData;
 
-		param.MDataRootDirectory = IO::Path::Combine(param.RootDirectory, "mdata");
-
-		auto mDataResolver = MDataResolver(param.RootDirectory, param.MDataRootDirectory, param.OutMDataID);
-		param.InMergeBasePVListFArc = mDataResolver.ResolvePath("rom/gm_pv_list_tbl.farc");
-		param.InMergeBaseMDataPVDB = mDataResolver.ResolvePath("rom/mdata_pv_db.txt");
-		param.InMergeBaseMDataSprDB = mDataResolver.ResolvePath("rom/2d/mdata_spr_db.bin");
-
 		const std::string pvUnderscoreIDStr = [id = param.OutPVID]() { char b[16]; sprintf_s(b, "pv_%03d", id); return std::string(b); }();
 		const std::string pvIDStr = [id = param.OutPVID]() { char b[16]; sprintf_s(b, "pv%03d", id); return std::string(b); }();
 		const std::string movieExtension { !inData.Chart->MovieFileName.empty() ? IO::Path::GetExtension(inData.Chart->MovieFileName) : ".mp4" };
 
-		param.OutMDataDirectory = IO::Path::Combine(param.MDataRootDirectory, param.OutMDataID.data());
-		param.OutMDataRomDirectory = IO::Path::Combine(param.OutMDataDirectory, "rom");
-		param.OutMDataRom2DDirectory = IO::Path::Combine(param.OutMDataRomDirectory, "2d");
-		param.OutMDataInfo = IO::Path::Combine(param.OutMDataDirectory, "info.txt");
-		param.OutOgg = IO::Path::Combine(param.OutMDataRomDirectory, pvUnderscoreIDStr + "_comfy.ogg");
-		param.OutDsc = IO::Path::Combine(param.OutMDataRomDirectory, pvUnderscoreIDStr + "_comfy.dsc");
-		param.OutMovie = !inData.Chart->MovieFileName.empty() ? IO::Path::Combine(param.OutMDataRomDirectory, pvUnderscoreIDStr + "_comfy" + movieExtension) : "";
-		param.OutPVListFArc = IO::Path::Combine(param.OutMDataRomDirectory, "gm_pv_list_tbl.farc");
-		param.OutMDataPVDB = IO::Path::Combine(param.OutMDataRomDirectory, "mdata_pv_db.txt");
-		param.OutMDataSprDB = IO::Path::Combine(param.OutMDataRom2DDirectory, "mdata_spr_db.bin");
-		param.OutSprSelPVFArc = IO::Path::Combine(param.OutMDataRom2DDirectory, "spr_sel_" + pvIDStr + ".farc");
+		param.OutModRomDirectory = IO::Path::Combine(param.RootDirectory, "rom");
+		param.OutModScriptDirectory = IO::Path::Combine(param.OutModRomDirectory, "script");
+		param.OutModSoundDirectory = IO::Path::Combine(param.OutModRomDirectory, "sound");
+		param.OutModSoundSongDirectory = IO::Path::Combine(param.OutModSoundDirectory, "song");
+		param.OutModMovieDirectory = IO::Path::Combine(param.OutModRomDirectory, "movie");
+
+		std::map<Difficulty, std::string> diffMap = {
+			{ Difficulty::Easy, "easy" },
+			{ Difficulty::Normal, "normal" },
+			{ Difficulty::Hard, "hard" },
+			{ Difficulty::Extreme, "extreme" },
+			{ Difficulty::ExExtreme, "extreme_1" },
+		};
+
+		param.OutDsc = IO::Path::Combine(param.OutModScriptDirectory, pvUnderscoreIDStr + "_" + diffMap[inData.Chart->Properties.Difficulty.Type] + ".dsc");
+
+		param.OutModConfig = IO::Path::Combine(param.RootDirectory, "config.toml");
+		param.OutOgg = IO::Path::Combine(param.OutModSoundSongDirectory, pvUnderscoreIDStr + ".ogg");
+		param.OutMovie = !inData.Chart->MovieFileName.empty() ? IO::Path::Combine(param.OutModMovieDirectory, pvUnderscoreIDStr + movieExtension) : "";
+		param.OutModPVDB = IO::Path::Combine(param.OutModRomDirectory, "mod_pv_db.txt");
 		param.SongSampleProvider = asyncAccessedWindowInputData.SongSampleProvider;
 
-		AsyncTasksExportChartToMData(asyncAccessedWindowInputData, param, tasks, progress);
+		AsyncTasksExportChartToMod(asyncAccessedWindowInputData, param, tasks, progress);
 	}
 
 	void PVScriptExportWindow::RequestExit()
@@ -1145,13 +972,6 @@ namespace Comfy::Studio::Editor
 
 		if (in.RootDirectory.has_value())
 			out.RootDirectory = in.RootDirectory.value();
-
-		if (in.MDataID.has_value() && in.MDataID->size() >= (out.OutMDataID.size() - 1))
-		{
-			for (size_t i = 0; i < 4; i++)
-				out.OutMDataID[i] = in.MDataID->at(i);
-			out.OutMDataID[4] = '\0';
-		}
 
 		if (in.BackgroundDim.has_value())
 			out.PVScriptBackgroundTint = vec4(0.0f, 0.0f, 0.0f, in.BackgroundDim.value());
@@ -1177,7 +997,6 @@ namespace Comfy::Studio::Editor
 		out.ExportFormatIndex = static_cast<i32>(in.OutFormat);
 		out.PVID = in.OutPVID;
 		out.RootDirectory = in.RootDirectory;
-		out.MDataID = std::string_view(in.OutMDataID.data(), in.OutMDataID.size() - 1);
 		out.BackgroundDim = in.PVScriptBackgroundTint.a;
 		out.MergeWithExistingMData = in.MergeWithExistingMData;
 		out.CreateSprSelPV = in.CreateSprSelPV;

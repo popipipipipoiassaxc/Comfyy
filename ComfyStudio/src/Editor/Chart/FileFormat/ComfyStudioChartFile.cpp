@@ -213,12 +213,7 @@ namespace Comfy::Studio::Editor
 		findMetadataStr(SectionIDMetadataArranger, outChart->Properties.Song.Arranger);
 		findMetadataI32(SectionIDMetadataTrackNumber, outChart->Properties.Song.TrackNumber);
 		findMetadataI32(SectionIDMetadataDiskNumber, outChart->Properties.Song.DiskNumber);
-		findMetadataStr(SectionIDMetadataCreatorName, outChart->Properties.Creator.Name);
-		findMetadataStr(SectionIDMetadataCreatorComment, outChart->Properties.Creator.Comment);
-		findMetadataStr(SectionIDMetadataImageCoverFileName, outChart->Properties.Image.CoverFileName);
-		findMetadataStr(SectionIDMetadataImageLogoFileName, outChart->Properties.Image.LogoFileName);
-		findMetadataStr(SectionIDMetadataImageBackgroundFileName, outChart->Properties.Image.BackgroundFileName);
-
+	
 		for (size_t i = 0; i < outChart->Properties.Song.ExtraInfo.size(); i++)
 		{
 			char buffer[32];
@@ -900,11 +895,6 @@ namespace Comfy::Studio::Editor
 		addMetadata(SectionIDMetadataArranger, sourceChart.Properties.Song.Arranger);
 		addMetadata(SectionIDMetadataTrackNumber, std::to_string(sourceChart.Properties.Song.TrackNumber));
 		addMetadata(SectionIDMetadataDiskNumber, std::to_string(sourceChart.Properties.Song.DiskNumber));
-		addMetadata(SectionIDMetadataCreatorName, sourceChart.Properties.Creator.Name);
-		addMetadata(SectionIDMetadataCreatorComment, sourceChart.Properties.Creator.Comment);
-		addMetadata(SectionIDMetadataImageCoverFileName, sourceChart.Properties.Image.CoverFileName);
-		addMetadata(SectionIDMetadataImageLogoFileName, sourceChart.Properties.Image.LogoFileName);
-		addMetadata(SectionIDMetadataImageBackgroundFileName, sourceChart.Properties.Image.BackgroundFileName);
 
 		for (size_t i = 0; i < sourceChart.Properties.Song.ExtraInfo.size(); i++)
 		{

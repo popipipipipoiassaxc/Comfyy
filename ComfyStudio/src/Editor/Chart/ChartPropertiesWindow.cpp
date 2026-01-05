@@ -372,19 +372,6 @@ namespace Comfy::Studio::Editor
 				}
 			});
 
-			GuiProperty::TreeNode("Chart Creator", ImGuiTreeNodeFlags_DefaultOpen, [&]
-			{
-				changesMade |= GuiProperty::InputWithHint("Name", defaultHint, chart.Properties.Creator.Name);
-				changesMade |= GuiProperty::InputMultiline("Comment", chart.Properties.Creator.Comment, vec2(0.0f, 66.0f));
-			});
-
-			GuiProperty::TreeNode("Song Images", ImGuiTreeNodeFlags_DefaultOpen, [&]
-			{
-				changesMade |= GuiPropertyImageFileName("Cover File Name", "song_jk.png", chart.Properties.Image.CoverFileName, chart.Properties.Image.Cover, chart.ChartFilePath, chartEditor);
-				changesMade |= GuiPropertyImageFileName("Logo File Name", "song_logo.png", chart.Properties.Image.LogoFileName, chart.Properties.Image.Logo, chart.ChartFilePath, chartEditor);
-				changesMade |= GuiPropertyImageFileName("Background File Name", "song_bg.png", chart.Properties.Image.BackgroundFileName, chart.Properties.Image.Background, chart.ChartFilePath, chartEditor);
-			});
-
 			GuiProperty::TreeNode("Song Preview", ImGuiTreeNodeFlags_DefaultOpen, [&]
 			{
 				GuiProperty::PropertyLabelValueFunc("Start and Duration", [&]

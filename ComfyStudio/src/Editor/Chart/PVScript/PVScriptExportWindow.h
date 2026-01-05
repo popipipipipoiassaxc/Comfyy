@@ -41,30 +41,23 @@ namespace Comfy::Studio::Editor
 		PVExportFormat OutFormat;
 		i32 OutPVID;
 		std::string RootDirectory;
-		std::array<char, 5> OutMDataID;
 
 		vec4 PVScriptBackgroundTint;
 		bool MergeWithExistingMData;
 		bool CreateSprSelPV;
 		f32 VorbisVBRQuality;
+		
+		std::string OutModRomDirectory;
+		std::string OutModScriptDirectory;
+		std::string OutModMovieDirectory;
+		std::string OutModSoundDirectory;
+		std::string OutModSoundSongDirectory;
 
-		std::string MDataRootDirectory;
-
-		std::string InMergeBasePVListFArc;
-		std::string InMergeBaseMDataPVDB;
-		std::string InMergeBaseMDataSprDB;
-
-		std::string OutMDataDirectory;
-		std::string OutMDataRomDirectory;
-		std::string OutMDataRom2DDirectory;
-		std::string OutMDataInfo;
+		std::string OutModConfig;
 		std::string OutOgg;
 		std::string OutMovie;
 		std::string OutDsc;
-		std::string OutPVListFArc;
-		std::string OutMDataPVDB;
-		std::string OutMDataSprDB;
-		std::string OutSprSelPVFArc;
+		std::string OutModPVDB;
 
 		std::shared_ptr<Audio::ISampleProvider> SongSampleProvider;
 	};
@@ -75,7 +68,7 @@ namespace Comfy::Studio::Editor
 		std::atomic<f32> Movie;
 		std::atomic<f32> Sprites;
 		std::atomic<f32> Script;
-		std::atomic<f32> MDataInfo;
+		std::atomic<f32> ModConfig;
 		std::atomic<f32> PVDB;
 		std::atomic<f32> PVList;
 

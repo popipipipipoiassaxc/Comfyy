@@ -734,7 +734,7 @@ namespace Comfy::Studio
 			func(userData.Input.ChartEditor_ImportUPDCChart, "chart_editor_import_updc_chart");
 			func(userData.Input.ChartEditor_ImportPVScriptChart, "chart_editor_import_pv_script_chart");
 			func(userData.Input.ChartEditor_ExportUPDCChart, "chart_editor_export_updc_chart");
-			func(userData.Input.ChartEditor_ExportPVScriptMData, "chart_editor_export_pv_script_mdata");
+			func(userData.Input.ChartEditor_ExportMegaMixMod, "chart_editor_export_pv_script_mdata");
 			func(userData.Input.ChartEditor_ExportPVScriptChart, "chart_editor_export_pv_script_chart");
 			func(userData.Input.ChartEditor_Undo, "chart_editor_undo");
 			func(userData.Input.ChartEditor_Redo, "chart_editor_redo");

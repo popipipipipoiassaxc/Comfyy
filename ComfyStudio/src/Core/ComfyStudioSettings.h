@@ -148,7 +148,7 @@ namespace Comfy::Studio
 			Input::MultiBinding ChartEditor_ImportUPDCChart;
 			Input::MultiBinding ChartEditor_ImportPVScriptChart;
 			Input::MultiBinding ChartEditor_ExportUPDCChart;
-			Input::MultiBinding ChartEditor_ExportPVScriptMData;
+			Input::MultiBinding ChartEditor_ExportMegaMixMod;
 			Input::MultiBinding ChartEditor_ExportPVScriptChart;
 			Input::MultiBinding ChartEditor_Undo;
 			Input::MultiBinding ChartEditor_Redo;

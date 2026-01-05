@@ -95,23 +95,6 @@ namespace Comfy::Studio::Editor
 				std::array<KeyValue, 4> ExtraInfo;
 			} Song;
 
-			struct ImageData
-			{
-				std::string CoverFileName;
-				std::string LogoFileName;
-				std::string BackgroundFileName;
-
-				AsyncLoadedImageFile Cover = { AsyncImageFileFlags_FlipY | AsyncImageFileFlags_TransparentBorder | AsyncImageFileFlags_TransparentBorderNoSprAdjust };
-				AsyncLoadedImageFile Logo = { AsyncImageFileFlags_FlipY };
-				AsyncLoadedImageFile Background = { AsyncImageFileFlags_FlipY };
-			} Image;
-
-			struct CreatorInfo
-			{
-				std::string Name;
-				std::string Comment;
-			} Creator;
-
 			struct ButtonSoundData
 			{
 				u32 ButtonID;

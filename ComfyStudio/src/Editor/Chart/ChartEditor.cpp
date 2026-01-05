@@ -246,7 +246,7 @@ namespace Comfy::Studio::Editor
 				if (Gui::MenuItem("Import UPDC Chart...", Input::ToString(GlobalUserData.Input.ChartEditor_ImportUPDCChart).data(), false, true))
 					CheckOpenSaveConfirmationPopupThenCall([this] { OpenReadImportPJEChartFileDialog(); });
 
-				if (Gui::MenuItem("Import PV Script Chart...", Input::ToString(GlobalUserData.Input.ChartEditor_ImportPVScriptChart).data(), false, true))
+				if (Gui::MenuItem("Import DivaScript Chart...", Input::ToString(GlobalUserData.Input.ChartEditor_ImportPVScriptChart).data(), false, true))
 					CheckOpenSaveConfirmationPopupThenCall([this] { OpenReadImportPVScriptFileDialogThenOpenImportWindow(); });
 
 				Gui::EndMenu();
@@ -257,10 +257,10 @@ namespace Comfy::Studio::Editor
 				if (Gui::MenuItem("Export UPDC Chart...", Input::ToString(GlobalUserData.Input.ChartEditor_ExportUPDCChart).data(), false, true))
 					OpenSaveExportPJEChartFileDialog();
 
-				if (Gui::MenuItem("Export PV Script MData...", Input::ToString(GlobalUserData.Input.ChartEditor_ExportPVScriptMData).data(), false, true))
+				if (Gui::MenuItem("Export MegaMix+ Mod...", Input::ToString(GlobalUserData.Input.ChartEditor_ExportMegaMixMod).data(), false, true))
 					OpenPVScriptExportWindow();
 
-				if (Gui::MenuItem("Export PV Script Chart...", Input::ToString(GlobalUserData.Input.ChartEditor_ExportPVScriptChart).data(), false, true))
+				if (Gui::MenuItem("Export DivaScript Chart...", Input::ToString(GlobalUserData.Input.ChartEditor_ExportPVScriptChart).data(), false, true))
 					OpenSaveExportSimplePVScriptChartFileDialog();
 
 #if COMFY_DEBUG && 0
@@ -481,33 +481,6 @@ namespace Comfy::Studio::Editor
 			return true;
 		}
 
-		if (IO::Path::DoesAnyPackedExtensionMatch(extension, ".png;.jpg;.jpeg;.bmp;.gif"))
-		{
-			auto setAndLoad = [&](std::string& outFileName, AsyncLoadedImageFile& outImage)
-			{
-				outImage.TryLoad(filePath);
-				outFileName = IO::Path::TryMakeRelative(filePath, chart->ChartFilePath);
-				undoManager.SetChangesWereMade();
-				return true;
-			};
-
-			static constexpr std::array coverStrings { "cover", "jacket", "song_jk", "folder", "album" };
-			static constexpr std::array logoStrings { "logo", };
-			static constexpr std::array backgroundStrings { "background", "song_bg", "haikei" };
-
-			const auto lowerCaseFileName = Util::ToLowerCopy(std::string(IO::Path::GetFileName(filePath)));
-			auto isPartOfFileName = [&lowerCaseFileName](std::string_view subString) { return Util::Contains(lowerCaseFileName, subString); };
-
-			if (std::any_of(coverStrings.begin(), coverStrings.end(), isPartOfFileName))
-				return setAndLoad(chart->Properties.Image.CoverFileName, chart->Properties.Image.Cover);
-
-			if (std::any_of(logoStrings.begin(), logoStrings.end(), isPartOfFileName))
-				return setAndLoad(chart->Properties.Image.LogoFileName, chart->Properties.Image.Logo);
-
-			if (std::any_of(backgroundStrings.begin(), backgroundStrings.end(), isPartOfFileName))
-				return setAndLoad(chart->Properties.Image.BackgroundFileName, chart->Properties.Image.Background);
-		}
-
 		return false;
 	}
 
@@ -621,10 +594,6 @@ namespace Comfy::Studio::Editor
 
 		if (!chart->MovieFileName.empty())
 			LoadMovieAsync(chart->MovieFileName);
-
-		chart->Properties.Image.Cover.TryLoad(chart->Properties.Image.CoverFileName, chart->ChartFilePath);
-		chart->Properties.Image.Logo.TryLoad(chart->Properties.Image.LogoFileName, chart->ChartFilePath);
-		chart->Properties.Image.Background.TryLoad(chart->Properties.Image.BackgroundFileName, chart->ChartFilePath);
 
 		SyncWorkingChartPointers();
 	}
@@ -1000,11 +969,6 @@ namespace Comfy::Studio::Editor
 
 			// TODO: Implement async image cache to avoid reloading the same files when they are set as the defaults (?)
 			const auto& defaultSettings = GlobalUserData.ChartProperties.Default;
-			tryAssignOptionalEmptyString(newChart->Properties.Creator.Name, defaultSettings.CreatorName);
-			tryAssignOptionalEmptyString(newChart->Properties.Creator.Comment, defaultSettings.CreatorComment);
-			tryAsignOptionalImagePath(newChart->Properties.Image.CoverFileName, newChart->Properties.Image.Cover, defaultSettings.ImageFilePathCover);
-			tryAsignOptionalImagePath(newChart->Properties.Image.LogoFileName, newChart->Properties.Image.Logo, defaultSettings.ImageFilePathLogo);
-			tryAsignOptionalImagePath(newChart->Properties.Image.BackgroundFileName, newChart->Properties.Image.Background, defaultSettings.ImageFilePathBackground);
 			tryAssignOptional(newChart->Properties.Difficulty.Type, defaultSettings.DifficultyType);
 			tryAssignOptional(newChart->Properties.Difficulty.Level, defaultSettings.DifficultyLevel);
 			tryAssignOptional(newChart->Properties.ButtonSound.ButtonID, defaultSettings.ButtonSoundButtonID);
@@ -1085,7 +1049,7 @@ namespace Comfy::Studio::Editor
 
 		if (Input::IsAnyPressed(GlobalUserData.Input.ChartEditor_ExportUPDCChart, false))
 			OpenSaveExportPJEChartFileDialog();
-		if (Input::IsAnyPressed(GlobalUserData.Input.ChartEditor_ExportPVScriptMData, false))
+		if (Input::IsAnyPressed(GlobalUserData.Input.ChartEditor_ExportMegaMixMod, false))
 			OpenPVScriptExportWindow();
 		if (Input::IsAnyPressed(GlobalUserData.Input.ChartEditor_ExportPVScriptChart, false))
 			OpenSaveExportSimplePVScriptChartFileDialog();
