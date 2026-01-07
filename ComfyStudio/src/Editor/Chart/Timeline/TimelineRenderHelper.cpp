@@ -59,8 +59,12 @@ namespace Comfy::Studio::Editor
 
 		sprites.HoldText = findSprite("TIMELINE_HOLD_TEXT");
 		sprites.HoldTextSync = findSprite("TIMELINE_HOLD_TEXT_SYNC");
+
+		sprites.RushText = findSprite("TIMELINE_RUSH_TEXT");
+
 		sprites.TargetLine = findSprite("TARGET_LINE");
 		sprites.TargetLineYellow = findSprite("TARGET_LINE_YELLOW");
+
 
 	}
 
@@ -105,6 +109,14 @@ namespace Comfy::Studio::Editor
 				Gui::AddSprite(drawList, *editorSprites, *holdTextSpr, topLeft, bottomRight, color);
 			else
 				drawList->AddText(Gui::GetFont(), 12.0f, position + vec2(-12.0f, 0.0f), color, "HOLD");
+		}
+
+		if (target.Flags.IsRush)
+		{
+			if (const auto rushTextSpr = sprites.RushText; rushTextSpr != nullptr)
+				Gui::AddSprite(drawList, *editorSprites, *sprites.RushText, topLeft, bottomRight, color);
+			else
+				drawList->AddText(Gui::GetFont(), 12.0f, position + vec2(-12.0f, 0.0f), color, "RUSH");
 		}
 
 #if COMFY_DEBUG && 0 // DEBUG: DOUBLE FLAG TEST

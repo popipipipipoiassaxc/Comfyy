@@ -48,6 +48,7 @@ namespace Comfy::Studio::Editor
 				static_cast<i32>(flags.IsChance),
 				static_cast<i32>(flags.IsDouble),
 				static_cast<i32>(flags.IsLong),
+				static_cast<i32>(flags.IsRush),
 				static_cast<i32>(target.ID), // Reference ID
 				static_cast<i32>(target.PreviousID),
 				static_cast<i32>(target.NextID),
@@ -104,6 +105,7 @@ namespace Comfy::Studio::Editor
 				newTarget.Flags.IsChance = parseI32(); advanceWord();
 				newTarget.Flags.IsDouble = parseI32(); advanceWord();
 				newTarget.Flags.IsLong = parseI32(); advanceWord();
+				newTarget.Flags.IsRush = parseI32(); advanceWord();
 				newTarget.ReferenceID = static_cast<TimelineTargetID>(parseI32()); advanceWord();
 				newTarget.PreviousID = static_cast<TimelineTargetID>(parseI32()); advanceWord();
 				newTarget.NextID = static_cast<TimelineTargetID>(parseI32()); advanceWord();

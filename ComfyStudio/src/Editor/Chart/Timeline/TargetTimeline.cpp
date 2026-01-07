@@ -1190,7 +1190,7 @@ namespace Comfy::Studio::Editor
 		// NOTE: Draw long note length indicators
 		for (const auto& target : workingChart->Targets)
 		{
-			if (!target.IsLongStart())
+			if (!target.IsRushStart() && !target.IsLongStart())
 				continue;
 
 			if (target.NextID == TimelineTargetID::Null)
@@ -2288,7 +2288,7 @@ namespace Comfy::Studio::Editor
 					if (!target.IsSelected)
 						continue;
 
-					if (IsSlideButtonType(target.Type) || target.Flags.IsLong)
+					if (IsSlideButtonType(target.Type) || target.Flags.IsLong || target.Flags.IsRush)
 						return false;
 
 					if (lookingForType == ButtonType::Count)
@@ -2310,6 +2310,16 @@ namespace Comfy::Studio::Editor
 						targets.push_back(target);
 
 				undoManager.Execute<ConvertTargetsToLong>(*workingChart, targets);
+			}
+
+			if (Gui::MenuItem("Convert to Rush Note(s)", "", nullptr, isSelectionConvertableToLong()))
+			{
+				std::vector<TimelineTarget> targets;
+				for (auto& target : workingChart->Targets)
+					if (target.IsSelected)
+						targets.push_back(target);
+
+				undoManager.Execute<ConvertTargetsToRush>(*workingChart, targets);
 			}
 
 			if (Gui::BeginMenu("Modify Targets", (selectionCount > 0)))

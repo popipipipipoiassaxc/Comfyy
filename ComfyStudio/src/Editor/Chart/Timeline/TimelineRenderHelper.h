@@ -40,6 +40,8 @@ namespace Comfy::Studio::Editor
 				*HoldText,
 				*HoldTextSync;
 
+			const Graphics::Spr *RushText;
+
 			const Graphics::Spr *TargetLine, *TargetLineYellow;
 		} sprites = {};
 	};

@@ -80,6 +80,7 @@ namespace Comfy::Studio::Editor
 			const bool isChance = target.Flags.IsChance;
 			const bool isDouble = target.Flags.IsDouble;
 			const bool isLong = target.Flags.IsLong;
+			const bool isRush = target.Flags.IsRush;
 
 			switch (target.Type)
 			{
@@ -87,21 +88,25 @@ namespace Comfy::Studio::Editor
 				return isDouble ? TargetType::TriangleW :
 					isLong ? TargetType::TriangleLong :
 					isHold ? TargetType::TriangleHold :
+					isRush ? TargetType::TriangleRush :
 					isChance ? TargetType::TriangleChance : TargetType::Triangle;
 			case ButtonType::Square:
 				return isDouble ? TargetType::SquareW :
 					isLong ? TargetType::SquareLong : 
 					isHold ? TargetType::SquareHold :
+					isRush ? TargetType::SquareRush :
 					isChance ? TargetType::SquareChance : TargetType::Square;
 			case ButtonType::Cross:
 				return isDouble ? TargetType::CrossW :
 					isLong ? TargetType::CrossLong : 
 					isHold ? TargetType::CrossHold :
+					isRush ? TargetType::CrossRush :
 					isChance ? TargetType::CrossChance : TargetType::Cross;
 			case ButtonType::Circle:
 				return isDouble ? TargetType::CircleW :
 					isLong ? TargetType::CircleLong : 
 					isHold ? TargetType::CircleHold :
+					isRush ? TargetType::CircleRush :
 					isChance ? TargetType::CircleChance : TargetType::Circle;
 			case ButtonType::SlideL:
 				return isChain ? TargetType::SlideChainL : isChance ? TargetType::SlideLChance : TargetType::SlideL;
@@ -110,6 +115,7 @@ namespace Comfy::Studio::Editor
 			case ButtonType::Star:
 				return isDouble ? TargetType::StarW :
 					isLong ? TargetType::StarLong :
+					isRush ? TargetType::StarRush :
 					isChance ? TargetType::ChanceStar : TargetType::Star;
 			}
 
@@ -339,14 +345,15 @@ namespace Comfy::Studio::Editor
 						targetCommand.FlyingTime = flyingTimeMS;
 						targetCommand.TimeSignature = 3;
 
-						if (targetInSyncPair.IsLongStart())
+						if (targetInSyncPair.IsLongStart() || targetInSyncPair.IsRushStart())
 						{
 							f32 fractions = chart.Targets.GetLengthInTicks(targetInSyncPair).BeatsFraction() / 4.0f;
 							if (fractions > 0.0f)
 								targetCommand.Length = static_cast<i32>(fractions * spawnTimes.RealBPM.TotalSeconds() * 100000.0f);
 						}
 
-						scriptBuilder.Add(spawnTimes.TargetTime, targetCommand);
+						if (!targetInSyncPair.IsRushEnd())
+							scriptBuilder.Add(spawnTimes.TargetTime, targetCommand);
 					}
 				}
 

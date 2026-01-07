@@ -101,7 +101,7 @@ namespace Comfy::Studio::Editor
 			void(*WriteFunc)(IO::StreamWriter&, const TimelineTarget&);
 		};
 
-		constexpr std::array<TargetField, 17> TargetFields =
+		constexpr std::array<TargetField, 18> TargetFields =
 		{
 			TargetField { "Tick", sizeof(i32), [](IO::StreamReader& r, TimelineTarget& t) { t.Tick = BeatTick(r.ReadI32()); }, [](IO::StreamWriter& writer, const TimelineTarget& target) { writer.WriteI32(target.Tick.Ticks()); } },
 			TargetField { "EndTick", sizeof(i32), [](IO::StreamReader& r, TimelineTarget& t) { r.ReadI32(); }, [](IO::StreamWriter& writer, const TimelineTarget& target) { writer.WriteI32(-1); } },
@@ -112,6 +112,7 @@ namespace Comfy::Studio::Editor
 			TargetField { "Chance", sizeof(u8), [](IO::StreamReader& r, TimelineTarget& t) { t.Flags.IsChance = r.ReadU8(); }, [](IO::StreamWriter& w, const TimelineTarget& t) { w.WriteU8(t.Flags.IsChance); } },
 			TargetField { "Double", sizeof(u8), [](IO::StreamReader& r, TimelineTarget& t) { t.Flags.IsDouble = r.ReadU8(); }, [](IO::StreamWriter& w, const TimelineTarget& t) { w.WriteU8(t.Flags.IsDouble); } },
 			TargetField { "Long", sizeof(u8), [](IO::StreamReader& r, TimelineTarget& t) { t.Flags.IsLong = r.ReadU8(); }, [](IO::StreamWriter& w, const TimelineTarget& t) { w.WriteU8(t.Flags.IsLong); } },
+			TargetField { "Rush", sizeof(u8), [](IO::StreamReader& r, TimelineTarget& t) { t.Flags.IsRush = r.ReadU8(); }, [](IO::StreamWriter& w, const TimelineTarget& t) { w.WriteU8(t.Flags.IsRush); } },
 			TargetField { "Position", sizeof(vec2), [](IO::StreamReader& r, TimelineTarget& t) { t.Properties.Position = r.ReadV2(); }, [](IO::StreamWriter& w, const TimelineTarget& t) { w.WriteF32(t.Properties.Position.x); w.WriteF32(t.Properties.Position.y); } },
 			TargetField { "Angle", sizeof(f32), [](IO::StreamReader& r, TimelineTarget& t) { t.Properties.Angle = r.ReadF32(); }, [](IO::StreamWriter& w, const TimelineTarget& t) { w.WriteF32(t.Properties.Angle); } },
 			TargetField { "Frequency", sizeof(f32), [](IO::StreamReader& r, TimelineTarget& t) { t.Properties.Frequency = r.ReadF32(); }, [](IO::StreamWriter& w, const TimelineTarget& t) { w.WriteF32(t.Properties.Frequency); } },

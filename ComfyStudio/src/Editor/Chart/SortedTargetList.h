@@ -153,7 +153,8 @@ namespace Comfy::Studio::Editor
 		// NOTE: Publicly set flags:
 		u16 IsDouble : 1;
 		u16 IsLong : 1;
-		u16 /* Reserved */ : 6;
+		u16 IsRush : 1;
+		u16 /* Reserved */ : 5;
 	};
 
 	static_assert(sizeof(TargetFlags) == sizeof(u32));
@@ -181,6 +182,8 @@ namespace Comfy::Studio::Editor
 
 		bool IsLongStart() const;
 		bool IsLongEnd() const;
+		bool IsRushStart() const;
+		bool IsRushEnd() const;
 	};
 
 	static_assert(sizeof(TimelineTarget) == 52);

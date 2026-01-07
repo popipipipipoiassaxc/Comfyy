@@ -90,6 +90,11 @@ namespace Comfy::Studio::Editor
 				case PVCommandLayout::TargetType::CrossLong: { outType = ButtonType::Cross; outFlags.IsLong = true; } break;
 				case PVCommandLayout::TargetType::SquareLong: { outType = ButtonType::Square; outFlags.IsLong = true; } break;
 
+				case PVCommandLayout::TargetType::TriangleRush: { outType = ButtonType::Triangle; outFlags.IsRush = true; } break;
+				case PVCommandLayout::TargetType::CircleRush: { outType = ButtonType::Circle; outFlags.IsRush = true; } break;
+				case PVCommandLayout::TargetType::CrossRush: { outType = ButtonType::Cross; outFlags.IsRush = true; } break;
+				case PVCommandLayout::TargetType::SquareRush: { outType = ButtonType::Square; outFlags.IsRush = true; } break;
+
 				case PVCommandLayout::TargetType::Star: { outType = ButtonType::Star; } break;
 				case PVCommandLayout::TargetType::StarW: { outType = ButtonType::Star; outFlags.IsDouble = true; } break;
 				case PVCommandLayout::TargetType::ChanceStar: { outType = ButtonType::Star; outFlags.IsChance = true; } break;
@@ -115,7 +120,7 @@ namespace Comfy::Studio::Editor
 				if (outTarget.Flags.IsChain && !outTarget.Flags.IsChainStart)
 					outTarget.Properties.Position.x -= Rules::ChainFragmentStartEndOffsetDistance * (outTarget.Type == ButtonType::SlideL ? -1.0f : +1.0f);
 				//Note:目前的实现并没有考虑多压长条，长条头尾相接等情况，需要考虑重写
-				if (outTarget.Flags.IsLong) 
+				if (outTarget.Flags.IsLong || outTarget.Flags.IsRush) 
 				{
 					if (StartLongCheck)
 					{

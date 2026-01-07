@@ -1,0 +1,6 @@
+Lyric Editing + Exporting
+Default Button Sound Setting
+Change Button FX for NC
+Separate Export of Lyrics, Zones, Notes
+Link Stars
+Rush Notes

@@ -845,6 +845,49 @@ namespace Comfy::Studio::Editor
 	public:
 		std::string_view GetName() const override { return "Convert Targets to Sustains"; }
 	};
+
+	class ConvertTargetsToRush : public Undo::Command
+	{
+	public:
+		ConvertTargetsToRush(Chart& chart, std::vector<TimelineTarget> targets) : chart(chart), targets(std::move(targets)) {}
+
+		void Undo() override
+		{
+			for (auto& undoTarget : targets)
+			{
+				if (TimelineTarget* target = chart.Targets.Find(undoTarget.ID); target != nullptr)
+				{
+					target->Flags.IsLong = false;
+					target->NextID = TimelineTargetID::Null;
+					target->PreviousID = TimelineTargetID::Null;
+				}
+			}
+		}
+
+		void Redo() override
+		{
+			// NOTE: Expects the targets array to be a multiple of 2 in size
+			for (size_t i = 0; i < targets.size(); i += 2)
+			{
+				TimelineTarget* startTarget = chart.Targets.Find(targets[i].ID);
+				TimelineTarget* endTarget = chart.Targets.Find(targets[i + 1].ID);
+				if (!startTarget || !endTarget)
+					continue;
+
+				startTarget->Flags.IsRush = true;
+				startTarget->NextID = endTarget->ID;
+				endTarget->Flags.IsRush = true;
+				endTarget->PreviousID = startTarget->ID;
+			}
+		}
+
+		Undo::MergeResult TryMerge(Command& command) { return Undo::MergeResult::Failed; }
+	private:
+		Chart& chart;
+		std::vector<TimelineTarget> targets;
+	public:
+		std::string_view GetName() const override { return "Convert Targets to Rush Notes"; }
+	};
 }
 
 namespace Comfy::Studio::Editor

@@ -132,6 +132,16 @@ namespace Comfy::Studio::Editor
 		return Flags.IsLong && static_cast<i32>(PreviousID) != 0;
 	}
 
+	bool TimelineTarget::IsRushStart() const
+	{
+		return Flags.IsRush && static_cast<i32>(NextID) != 0;
+	}
+
+	bool TimelineTarget::IsRushEnd() const
+	{
+		return Flags.IsRush && static_cast<i32>(PreviousID) != 0;
+	}
+
 	TimelineTargetID SortedTargetList::GetNextUniqueID()
 	{
 		return static_cast<TimelineTargetID>(++GlobalTimelineTargetIDCounter);
@@ -254,7 +264,7 @@ namespace Comfy::Studio::Editor
 
 	Comfy::Studio::Editor::BeatTick SortedTargetList::GetLengthInTicks(const TimelineTarget& target) const
 	{
-		if (target.IsLongStart() && static_cast<i32>(target.NextID) != 0)
+		if (target.IsLongStart() || target.IsRushStart() && static_cast<i32>(target.NextID) != 0)
 		{
 			i32 index = FindIndex(target.NextID);
 			if (index != -1)

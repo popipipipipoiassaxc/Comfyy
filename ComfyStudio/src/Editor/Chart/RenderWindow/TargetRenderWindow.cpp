@@ -570,7 +570,7 @@ namespace Comfy::Studio::Editor
 			auto endTick = buttonTick + GlobalUserData.TargetPreview.PostHitLingerDuration;
 			const auto endTime = workingChart->TempoMap.TickToTime(endTick);
 
-			if (target.IsLongStart())
+			if (target.IsLongStart() || target.IsRushStart())
 			{
 				endTick += workingChart->Targets.GetLengthInTicks(target);
 				endTick -= GlobalUserData.TargetPreview.PostHitLingerDuration;
@@ -602,6 +602,7 @@ namespace Comfy::Studio::Editor
 				targetData.Chance = target.Flags.IsChance;
 				targetData.Double = target.Flags.IsDouble;
 				targetData.Long = target.Flags.IsLong;
+				targetData.Rush = target.Flags.IsRush;
 				targetData.Position = properties.Position;
 				targetData.Progress = progress;
 				targetData.Scale = 1.0f;
@@ -619,6 +620,7 @@ namespace Comfy::Studio::Editor
 						buttonData.Chance = targetData.Chance;
 						buttonData.Double = targetData.Double;
 						buttonData.Long = targetData.Long;
+						buttonData.Rush = targetData.Rush;
 						buttonData.Shadow = TargetRenderHelper::ButtonShadowType::Black;
 						buttonData.Position = GetButtonPathSinePoint(progress, properties);
 						buttonData.Progress = progress;

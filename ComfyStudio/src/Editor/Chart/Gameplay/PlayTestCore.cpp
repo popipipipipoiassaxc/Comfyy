@@ -687,6 +687,7 @@ namespace Comfy::Studio::Editor
 						targetData.Chance = onScreenTarget.Flags.IsChance;
 						targetData.Double = onScreenTarget.Flags.IsDouble;
 						targetData.Long = onScreenTarget.Flags.IsLong;
+						targetData.Rush = onScreenTarget.Flags.IsRush;
 						targetData.Position = properties.Position;
 						targetData.Progress = progressUnbound;
 						targetData.Scale = hitMissProgress;
