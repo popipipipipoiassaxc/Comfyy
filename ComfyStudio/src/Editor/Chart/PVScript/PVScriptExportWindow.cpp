@@ -484,7 +484,9 @@ namespace Comfy::Studio::Editor
 				IO::File::WriteAllText(inParam.OutModConfig,
 					"enabled=true\n"
 					"name=\"Comfy Exported Mod\"\n"
-					"version=\"1.0\"\n");
+					"version=\"1.0\"\n"
+					"include=[\".\"]\n"
+				);
 				outProgress.ModConfig = 1.0f;
 			}));
 

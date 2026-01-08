@@ -2,5 +2,6 @@ Lyric Editing + Exporting
 Default Button Sound Setting
 Change Button FX for NC
 Separate Export of Lyrics, Zones, Notes
+Auto-Audio Normalization and Resampling on export
 Link Stars
 Rush Notes
