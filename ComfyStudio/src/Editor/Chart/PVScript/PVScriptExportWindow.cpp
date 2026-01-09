@@ -585,6 +585,8 @@ namespace Comfy::Studio::Editor
 				pvDB.append(b, sprintf_s(b, "pv_%03d.field.length=%d\n", inParam.OutPVID, 1));
 				pvDB.append(b, sprintf_s(b, "pv_%03d.hidden_timing=0.3\n", inParam.OutPVID));
 				pvDB.append(b, sprintf_s(b, "pv_%03d.high_speed_rate=4\n", inParam.OutPVID));
+
+				// TODO: Add Lyric Exporting
 				pvDB.append(b, sprintf_s(b, "pv_%03d.lyric.%03d=%s\n", inParam.OutPVID, 0, "DUMMY_LYRICS"));
 				pvDB.append(b, sprintf_s(b, "pv_%03d.motion.01=CMN_POSE_DEFAULT_T\n", inParam.OutPVID));
 

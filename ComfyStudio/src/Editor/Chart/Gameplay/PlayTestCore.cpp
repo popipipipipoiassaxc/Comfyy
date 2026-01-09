@@ -785,8 +785,10 @@ namespace Comfy::Studio::Editor
 			hudData.SongTitle = sharedContext.Chart->SongTitleOrDefault();
 			hudData.Difficulty = sharedContext.Chart->Properties.Difficulty.Type;
 			hudData.PlaybackTime = GetPlaybackTime();
+			hudData.PlaybackTick = GetPlaybackTick();
 			hudData.RestartTime = resetPoint;
 			hudData.Duration = chartDuration;
+			hudData.Events = sharedContext.Chart->Events;
 			hudData.DrawPracticeInfo = true;
 			sharedContext.RenderHelper->DrawHUD(*sharedContext.Renderer, hudData);
 		}
@@ -1498,6 +1500,12 @@ namespace Comfy::Studio::Editor
 #else
 			return (sharedContext.SongVoice->GetPosition() - finalOffset);
 #endif
+		}
+
+		BeatTick GetPlaybackTick() const
+		{
+			const auto time = GetPlaybackTime();
+			return sharedContext.Chart->TempoMap.TimeToTick(time);
 		}
 
 		void SetPlaybackTime(TimeSpan value)

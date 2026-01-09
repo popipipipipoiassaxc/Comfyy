@@ -96,6 +96,7 @@ namespace Comfy::Studio::Editor
 				layers.LevelInfoExtreme = findLayer(*aetGameCommon, "level_info_extreme");
 				layers.LevelInfoExExtreme = findLayer(*aetGameCommon, "level_info_extreme_extra");
 				layers.SongTitle = findLayer(*aetGameCommon, "p_song_title_lt");
+				layers.LyricText = findLayer(*aetGameCommon, "p_song_lyric_lt");
 
 				layers.SyncInfoSingle = findLayer(*aetGameCommon, "sync_info_single");
 				layers.SyncInfoDouble = findLayer(*aetGameCommon, "sync_info_double");
@@ -619,6 +620,7 @@ namespace Comfy::Studio::Editor
 			if (aetGameCommon == nullptr || sprGameCommon == nullptr || aetGame == nullptr || sprGame == nullptr || sprFont36 == nullptr)
 				return;
 
+			
 			const auto playbackFrame = hud.PlaybackTime.ToFrames();
 			switch (gameTheme)
 			{
@@ -657,6 +659,21 @@ namespace Comfy::Studio::Editor
 
 			if (const auto* font = GetFont36(); font != nullptr && !hud.SongTitle.empty())
 				renderer.Font().DrawBorder(*font, hud.SongTitle, TryGetTransform(layers.SongTitle, playbackFrame));
+
+			size_t lyricNum = 1;
+			for (auto ev = hud.Events.begin(); ev != hud.Events.end(); ++ev) {
+				if (ev->Kind == EventKind::Lyrics) {
+					if (hud.PlaybackTick >= ev->StartTick && hud.PlaybackTick <= ev->EndTick)
+					{
+						if (const auto* font = GetFont36(); font != nullptr) {
+							char nameBuffer[256] = { 0 };
+							sprintf_s(nameBuffer, "Lyric #%zu", lyricNum);
+							renderer.Font().DrawBorder(*font, nameBuffer, TryGetTransform(layers.LyricText, playbackFrame));
+						}
+					}
+					lyricNum++;
+				}
+			}
 		}
 
 		SyncHoldInfoMarkerData GetSyncHoldInfoMarkerData() const
@@ -1572,6 +1589,7 @@ namespace Comfy::Studio::Editor
 				LevelInfoExtreme,
 				LevelInfoExExtreme,
 				SongTitle,
+				LyricText,
 				SyncInfoSingle,
 				SyncInfoDouble,
 				SyncInfoDoubleAdd,

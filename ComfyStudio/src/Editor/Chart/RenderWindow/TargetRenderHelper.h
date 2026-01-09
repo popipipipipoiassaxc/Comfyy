@@ -43,8 +43,10 @@ namespace Comfy::Studio::Editor
 			std::string_view SongTitle;
 			Difficulty Difficulty;
 			TimeSpan PlaybackTime;
+			BeatTick PlaybackTick;
 			TimeSpan RestartTime;
 			TimeSpan Duration;
+			SortedEventList Events;
 			bool DrawPracticeInfo;
 		};
 

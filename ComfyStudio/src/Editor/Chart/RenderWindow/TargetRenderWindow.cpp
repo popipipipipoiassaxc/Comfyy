@@ -371,8 +371,10 @@ namespace Comfy::Studio::Editor
 		hudData.SongTitle = workingChart->SongTitleOrDefault();
 		hudData.Difficulty = workingChart->Properties.Difficulty.Type;
 		hudData.PlaybackTime = timeline.GetCursorTime();
+		hudData.PlaybackTick = timeline.GetCursorTick();
 		hudData.RestartTime = timeline.GetIsPlayback() ? chartEditor.GetPlaybackTimeOnPlaybackStart() : hudData.PlaybackTime;
 		hudData.Duration = workingChart->DurationOrDefault();
+		hudData.Events = workingChart->Events;
 		hudData.DrawPracticeInfo = false;
 
 		renderHelper->DrawHUD(renderer, hudData);

@@ -904,7 +904,7 @@ namespace Comfy::Studio::Editor
 			Gui::SetNextWindowPos(tempoPopupWindowStartPosition, ImGuiCond_Appearing, tempoPopupWindowStartPivot);
 			Gui::SetNextWindowSize(tempoPopupWindowStartSize, ImGuiCond_Always);
 		}
-
+		
 		if (Gui::WideBeginPopup(tempoChangePopupName))
 		{
 			const f32 closeButtonSize = Gui::GetFontSize();
@@ -2408,16 +2408,24 @@ namespace Comfy::Studio::Editor
 					return CheckHasIntersectingEvents(startTick, kind) || CheckHasIntersectingEvents(endTick, kind);
 				};
 
-				if (Gui::MenuItem("Challenge Time", "", nullptr, !isBlocked(EventKind::ChallengeTime)))
+				if (Gui::MenuItem("Challenge Time", "", nullptr, !isBlocked(EventKind::ChallengeTime))) {
+					auto data = EventDataEmpty();
 					undoManager.Execute<AddEvent>(*workingChart, TimedEvent(EventKind::ChallengeTime, startTick, endTick));
+				}
 
-				if (Gui::MenuItem("Chance Time", "", nullptr, !isBlocked(EventKind::ChallengeTime)))
+				if (Gui::MenuItem("Chance Time", "", nullptr, !isBlocked(EventKind::ChallengeTime))) {
+					auto data = EventDataEmpty();
 					undoManager.Execute<AddEvent>(*workingChart, TimedEvent(EventKind::ChanceTime, startTick, endTick));
+				}
 
-				if (Gui::MenuItem("Technical Zone", "", nullptr, !isBlocked(EventKind::TechnicalZone)))
+				if (Gui::MenuItem("Technical Zone", "", nullptr, !isBlocked(EventKind::TechnicalZone))) {
+					auto data = EventDataEmpty();
 					undoManager.Execute<AddEvent>(*workingChart, TimedEvent(EventKind::TechnicalZone, startTick, endTick));
+				}
 
 				if (Gui::MenuItem("Lyric", "", nullptr, !isBlocked(EventKind::Lyrics))) {
+					auto data = EventDataLyric();
+					data.Text = "Dummy Lyric";
 					undoManager.Execute<AddEvent>(*workingChart, TimedEvent(EventKind::Lyrics, startTick, endTick));
 				}
 
@@ -2431,35 +2439,35 @@ namespace Comfy::Studio::Editor
 
 				undoManager.Execute<RemoveEvent>(*workingChart, event);
 			}
-
+			
 			if (Gui::MenuItem("Edit Event", "", nullptr, rightClickHoveredEventID != -1)) {
-				workingEventID = rightClickHoveredEventID;
+				TimedEvent& event = workingChart->Events[workingChart->Events.FindIndex(rightClickHoveredEventID)];
 
-				StartEditingEvent();
+				if (event.Kind == EventKind::Lyrics) {
+					workingEventID = rightClickHoveredEventID;
+
+					// Gui::OpenPopup("##LyricEditPopup", ImGuiPopupFlags_AnyPopupLevel);
+				}
 			}
-			if (workingEventID != -1)
-				UpdateEditEvent();
 
 			Gui::EndPopup();
 		}
+		if (workingEventID != -1)
+			UpdateEditEvent();
 	}
 
 	void TargetTimeline::StartEditingEvent() {
-		TimedEvent& event = workingChart->Events[workingChart->Events.FindIndex(workingEventID)];
-
-		if (event.Kind == EventKind::Lyrics) {
-			Gui::OpenPopup("##LyricEditPopup");
-		}
 	}
 
 	void TargetTimeline::UpdateEditEvent() {
 		TimedEvent& event = workingChart->Events[workingChart->Events.FindIndex(workingEventID)];
 
 		if (event.Kind == EventKind::Lyrics) {
-			Gui::SetNextWindowSize(vec2(500, 500));
-			if (Gui::WideBeginPopup("##LyricEditPopup")) {
-				Gui::Text("Imagine here a lyric editor.");
-			}
+			/*if (Gui::Begin("##LyricEditPopup")) {
+				Gui::Text("JP Lyric: (editor)");
+				Gui::Text("EN Lyric: (editor)");
+				Gui::End();
+			}*/
 		}
 	}
 

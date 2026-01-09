@@ -25,6 +25,18 @@ namespace Comfy::Studio::Editor
 	};
 	*/
 
+	struct EventData {
+
+	};
+
+	struct EventDataEmpty : EventData {
+
+	};
+
+	struct EventDataLyric : EventData {
+		std::string Text;
+	};
+
 	struct TimedEvent
 	{
 		EventID ID;
