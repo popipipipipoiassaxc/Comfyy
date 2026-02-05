@@ -560,6 +560,7 @@ namespace Comfy::Studio::Editor
 		const auto cursorTime = timeline.GetCursorTime();
 		const auto cursorTick = timeline.GetCursorTick();
 
+		int idx = 0;
 		for (const auto& target : targets)
 		{
 			auto[targetTime, buttonTime, targetTick, buttonTick, flyingTime, realbpm] = workingChart->TempoMap.GetTargetSpawnTimes(target);
@@ -624,11 +625,25 @@ namespace Comfy::Studio::Editor
 						buttonData.Long = targetData.Long;
 						buttonData.Rush = targetData.Rush;
 						buttonData.Shadow = TargetRenderHelper::ButtonShadowType::Black;
-						buttonData.Position = GetButtonPathSinePoint(progress, properties);
+						auto& prevTarget = targets[idx - 1];
+						bool linkMovement = false;
+						if ((target.Flags.IsLink || target.Flags.IsLinkEnd) && prevTarget.Flags.IsLink) {
+							auto prevProperties = Rules::TryGetProperties(prevTarget);
+
+							auto [prTargetTime, prButtonTime, prTargetTick, prButtonTick, prFlyingTime, prRealbpm] = workingChart->TempoMap.GetTargetSpawnTimes(prevTarget);
+
+							const auto linkProgressUnbound = static_cast<f32>(ConvertRange(prButtonTime.TotalSeconds(), buttonTime.TotalSeconds(), 0.0, 1.0, cursorTime.TotalSeconds()));
+							const auto linkProgress = Clamp(linkProgressUnbound, 0.0f, 1.0f);
+							buttonData.Position = GetButtonPathLinkPoint(linkProgress, prevProperties, properties);
+							linkMovement = true;
+						}
+						else {
+							buttonData.Position = GetButtonPathSinePoint(progress, properties);
+						}
 						buttonData.Progress = progress;
 						buttonData.Scale = 1.0f;
 
-						if (!buttonData.Sync && !target.Flags.IsLong)
+						if (!buttonData.Sync && !target.Flags.IsLong && !linkMovement)
 						{
 							const auto flyDuration = (buttonTime - targetTime);
 							renderHelperEx.ConstructButtonTrail(renderHelperEx.EmplaceButtonTrail(), target.Type, progress, progressUnbound, properties, flyDuration);
@@ -667,6 +682,7 @@ namespace Comfy::Studio::Editor
 					}
 				}
 			}
+			idx++;
 		}
 	}
 }

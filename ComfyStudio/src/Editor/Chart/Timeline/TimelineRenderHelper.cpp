@@ -65,6 +65,7 @@ namespace Comfy::Studio::Editor
 		sprites.TargetLine = findSprite("TARGET_LINE");
 		sprites.TargetLineYellow = findSprite("TARGET_LINE_YELLOW");
 
+		sprites.ButtonIconStarLink = findSprite("TIMELINE_STAR_LINK");
 
 	}
 
@@ -204,6 +205,9 @@ namespace Comfy::Studio::Editor
 		// NOTE: This does not match the correct behavior as used in the render window but should avoid confusion between single fragment chains and normal slides
 		if (target.Flags.IsChainStart && target.Flags.IsChainEnd)
 			isFrag = true;
+
+		if ((target.Flags.IsLink || target.Flags.IsLinkEnd) && target.Type == ButtonType::Star)
+			return sprites.ButtonIconStarLink;
 
 		const auto& typesArray =
 			isLong ? sprites.ButtonIconsLong :

@@ -33,6 +33,11 @@ namespace Comfy::Studio::Editor
 		return GetButtonPathSinePoint(progress, properties.Position, properties.Angle, properties.Frequency, properties.Amplitude, properties.Distance);
 	}
 
+	inline vec2 GetButtonPathLinkPoint(f32 progress, const TargetProperties& properties, const TargetProperties& nextProperties)
+	{
+		return glm::mix(properties.Position, nextProperties.Position, progress);
+	}
+
 	namespace Rules
 	{
 		struct DiagonalRowLayoutUserDefinition

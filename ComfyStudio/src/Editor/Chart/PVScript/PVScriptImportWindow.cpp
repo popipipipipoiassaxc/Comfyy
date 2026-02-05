@@ -99,8 +99,8 @@ namespace Comfy::Studio::Editor
 				case PVCommandLayout::TargetType::StarW: { outType = ButtonType::Star; outFlags.IsDouble = true; } break;
 				case PVCommandLayout::TargetType::ChanceStar: { outType = ButtonType::Star; outFlags.IsChance = true; } break;
 
-				case PVCommandLayout::TargetType::LinkStar: { outType = ButtonType::Star; } break;
-				case PVCommandLayout::TargetType::LinkStarEnd: { outType = ButtonType::Star; } break;
+				case PVCommandLayout::TargetType::LinkStar: { outType = ButtonType::Star; outFlags.IsLink = true; } break;
+				case PVCommandLayout::TargetType::LinkStarEnd: { outType = ButtonType::Star; outFlags.IsLinkEnd = true; } break;
 				}
 
 				outTarget.Properties.Position.x = static_cast<f32>(targetCommand.Parameters.PositionX / PVTargetCommandFixedPointPositionFactor);

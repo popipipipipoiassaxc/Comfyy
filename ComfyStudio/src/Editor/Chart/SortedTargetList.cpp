@@ -371,6 +371,8 @@ namespace Comfy::Studio::Editor
 
 		// TODO: Floor and ceil to "slide -> slide chain" transitions (?)
 		UpdateChainFlagsInRange(0, static_cast<i32>(targets.size()));
+
+		UpdateStarLinkFlagsInRange(0, static_cast<i32>(targets.size()));
 	}
 
 	TimelineTargetID SortedTargetList::FindNewTargetID(TimelineTargetID referenceID)
@@ -539,5 +541,37 @@ namespace Comfy::Studio::Editor
 			back.Flags.IsChainEnd = true;
 
 		slideTargetBuffer.clear();
+	}
+
+	void SortedTargetList::UpdateStarLinkFlagsInRange(i32 startIndex, i32 endIndex)
+	{
+		std::vector<TimelineTarget*> linkTargetBuffer;
+
+		for (i32 i = startIndex; i < endIndex; i++)
+		{
+			auto& target = targets[i];
+			if (target.Type == ButtonType::Star && target.Flags.IsLink)
+			{
+				target.Flags.IsLinkEnd = false;
+				linkTargetBuffer.push_back(&target);
+			}
+		}
+
+		if (linkTargetBuffer.empty())
+			return;
+
+		for (i32 i = 0; i < static_cast<i32>(linkTargetBuffer.size()); i++)
+		{
+			auto* target = linkTargetBuffer[i];
+			auto* nextTarget = (i + 1 < linkTargetBuffer.size()) ? linkTargetBuffer[i + 1] : nullptr;
+			auto* prevTarget = (i - 1 >= 0) ? linkTargetBuffer[i - 1] : nullptr;
+			
+			if (nextTarget != nullptr)
+				if (target->Flags.IsLink && !nextTarget->Flags.IsLink)
+					nextTarget->Flags.IsLinkEnd = true;
+		}
+
+		if (auto& back = *linkTargetBuffer.back(); back.Flags.IsLink)
+			back.Flags.IsLinkEnd = true;
 	}
 }

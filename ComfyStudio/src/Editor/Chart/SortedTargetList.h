@@ -259,6 +259,8 @@ namespace Comfy::Studio::Editor
 		void UpdateChainFlagsInRange(i32 startIndex, i32 endIndex);
 		void UpdateChainFlagsForDirection(i32 startIndex, i32 endIndex, ButtonType slideDirection);
 
+		void UpdateStarLinkFlagsInRange(i32 startIndex, i32 endIndex);
+
 	private:
 		std::vector<TimelineTarget> targets;
 		std::vector<TimelineTarget*> slideTargetBuffer;

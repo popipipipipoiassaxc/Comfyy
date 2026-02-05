@@ -910,7 +910,7 @@ namespace Comfy::Studio::Editor
 		void Redo() override
 		{
 			// NOTE: Expects the targets array to be a multiple of 2 in size
-			for (size_t i = 0; i < targets.size() - 1; i++)
+			for (size_t i = 0; i < targets.size(); i++)
 			{
 				TimelineTarget* starTarget = chart.Targets.Find(targets[i].ID);
 				if (!starTarget)
@@ -918,9 +918,6 @@ namespace Comfy::Studio::Editor
 
 				starTarget->Flags.IsLink = true;
 			}
-			TimelineTarget* lastStar = chart.Targets.Find(targets[targets.size() - 1].ID);
-			if (lastStar)
-				lastStar->Flags.IsLinkEnd = true;
 		}
 
 		Undo::MergeResult TryMerge(Command& command) { return Undo::MergeResult::Failed; }

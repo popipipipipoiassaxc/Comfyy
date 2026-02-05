@@ -43,6 +43,8 @@ namespace Comfy::Studio::Editor
 			const Graphics::Spr *RushText;
 
 			const Graphics::Spr *TargetLine, *TargetLineYellow;
+
+			const Graphics::Spr *ButtonIconStarLink;
 		} sprites = {};
 	};
 }
