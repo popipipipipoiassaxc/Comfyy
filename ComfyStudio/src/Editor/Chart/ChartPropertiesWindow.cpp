@@ -526,5 +526,26 @@ namespace Comfy::Studio::Editor
 			if (changesMade)
 				undoManager.SetChangesWereMade();
 		});
+		GuiProperty::TreeNode("Chart Statistics", ImGuiTreeNodeFlags_DefaultOpen, [&]
+		{
+			char comboFormat[16];
+			int ComboCount = 0;
+			BeatTick CurrentTick = BeatTick(-1);
+			for (auto& target : chart.Targets) {
+				if (target.Flags.IsChain && !target.Flags.IsChainStart)
+					continue;
+
+				if (target.IsRushEnd())
+					continue;
+
+				if (target.Tick == CurrentTick)
+					continue;
+
+				CurrentTick = target.Tick;
+				ComboCount++;
+			}
+			sprintf(comboFormat, " %03d COMBO", ComboCount);
+			GuiProperty::TreeNode("Max Combo", comboFormat, ImGuiTreeNodeFlags_Leaf, [&]{});
+		});
 	}
 }

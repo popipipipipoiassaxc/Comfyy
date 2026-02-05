@@ -142,7 +142,6 @@ namespace Comfy::Studio::Editor
 		u16 IsSync : 1;
 		u16 IsChainStart : 1;
 		u16 IsChainEnd : 1;
-		u16 /* Reserved */ : 1;
 
 		u16 IndexWithinSyncPair : 4;
 		u16 SyncPairCount : 4;
@@ -154,7 +153,11 @@ namespace Comfy::Studio::Editor
 		u16 IsDouble : 1;
 		u16 IsLong : 1;
 		u16 IsRush : 1;
-		u16 /* Reserved */ : 5;
+		u16 IsLink : 1;
+
+		// NOTE: Internally set flags:
+		u16 IsLinkEnd : 1;
+		u16 /* Reserved */ : 1;
 	};
 
 	static_assert(sizeof(TargetFlags) == sizeof(u32));

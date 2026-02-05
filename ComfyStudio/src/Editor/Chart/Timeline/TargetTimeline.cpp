@@ -1425,6 +1425,7 @@ namespace Comfy::Studio::Editor
 		{
 			u32 color = 0xFFFFFFFF;
 			u32 secondaryColor = 0xFFFFFFFF;
+			std::string_view viewer;
 			char nameBuffer[256] = { 0 };
 
 			switch (event.Kind)
@@ -1445,7 +1446,8 @@ namespace Comfy::Studio::Editor
 				secondaryColor = 0xFF146BF7;
 				break;
 			case EventKind::Lyrics:
-				sprintf_s(nameBuffer, "Lyric #%zu", ++lyricCount);
+				EventDataLyric* lyricData = (EventDataLyric*)(event.Data);
+				sprintf_s(nameBuffer, "%.30s / %.30s", lyricData->Lyric.data(), lyricData->LyricEn.data());
 				color = 0x40777777;
 				secondaryColor = 0xFFF0F0F0;
 				break;
@@ -2302,6 +2304,20 @@ namespace Comfy::Studio::Editor
 				return true;
 			};
 
+			auto isSelectionPurelyStars = [&]()
+			{
+				for (const auto& target : workingChart->Targets)
+				{
+					if (!target.IsSelected)
+						continue;
+
+					if (target.Type != ButtonType::Star)
+						return false;
+				}
+
+				return true;
+			};
+
 			if (Gui::MenuItem("Convert to Sustain(s)", "", nullptr, isSelectionConvertableToLong()))
 			{
 				std::vector<TimelineTarget> targets;
@@ -2320,6 +2336,16 @@ namespace Comfy::Studio::Editor
 						targets.push_back(target);
 
 				undoManager.Execute<ConvertTargetsToRush>(*workingChart, targets);
+			}
+
+			if (Gui::MenuItem("Convert to Link Star(s)", "", nullptr, isSelectionPurelyStars()))
+			{
+				std::vector<TimelineTarget> targets;
+				for (auto& target : workingChart->Targets)
+					if (target.IsSelected)
+						targets.push_back(target);
+
+				undoManager.Execute<ConvertTargetsToLink>(*workingChart, targets);
 			}
 
 			if (Gui::BeginMenu("Modify Targets", (selectionCount > 0)))
@@ -2409,24 +2435,19 @@ namespace Comfy::Studio::Editor
 				};
 
 				if (Gui::MenuItem("Challenge Time", "", nullptr, !isBlocked(EventKind::ChallengeTime))) {
-					auto data = EventDataEmpty();
-					undoManager.Execute<AddEvent>(*workingChart, TimedEvent(EventKind::ChallengeTime, startTick, endTick));
+					undoManager.Execute<AddEvent>(*workingChart, TimedEvent(EventKind::ChallengeTime, startTick, endTick, new EventDataEmpty()));
 				}
 
 				if (Gui::MenuItem("Chance Time", "", nullptr, !isBlocked(EventKind::ChallengeTime))) {
-					auto data = EventDataEmpty();
-					undoManager.Execute<AddEvent>(*workingChart, TimedEvent(EventKind::ChanceTime, startTick, endTick));
+					undoManager.Execute<AddEvent>(*workingChart, TimedEvent(EventKind::ChanceTime, startTick, endTick, new EventDataEmpty()));
 				}
 
 				if (Gui::MenuItem("Technical Zone", "", nullptr, !isBlocked(EventKind::TechnicalZone))) {
-					auto data = EventDataEmpty();
-					undoManager.Execute<AddEvent>(*workingChart, TimedEvent(EventKind::TechnicalZone, startTick, endTick));
+					undoManager.Execute<AddEvent>(*workingChart, TimedEvent(EventKind::TechnicalZone, startTick, endTick, new EventDataEmpty()));
 				}
 
 				if (Gui::MenuItem("Lyric", "", nullptr, !isBlocked(EventKind::Lyrics))) {
-					auto data = EventDataLyric();
-					data.Text = "Dummy Lyric";
-					undoManager.Execute<AddEvent>(*workingChart, TimedEvent(EventKind::Lyrics, startTick, endTick));
+					undoManager.Execute<AddEvent>(*workingChart, TimedEvent(EventKind::Lyrics, startTick, endTick, new EventDataLyric()));
 				}
 
 				Gui::EndMenu();

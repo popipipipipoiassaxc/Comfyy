@@ -857,7 +857,7 @@ namespace Comfy::Studio::Editor
 			{
 				if (TimelineTarget* target = chart.Targets.Find(undoTarget.ID); target != nullptr)
 				{
-					target->Flags.IsLong = false;
+					target->Flags.IsRush = false;
 					target->NextID = TimelineTargetID::Null;
 					target->PreviousID = TimelineTargetID::Null;
 				}
@@ -887,6 +887,48 @@ namespace Comfy::Studio::Editor
 		std::vector<TimelineTarget> targets;
 	public:
 		std::string_view GetName() const override { return "Convert Targets to Rush Notes"; }
+	};
+
+	class ConvertTargetsToLink : public Undo::Command
+	{
+	public:
+		ConvertTargetsToLink(Chart& chart, std::vector<TimelineTarget> targets) : chart(chart), targets(std::move(targets)) {}
+
+		void Undo() override
+		{
+			for (auto& undoTarget : targets)
+			{
+				if (TimelineTarget* target = chart.Targets.Find(undoTarget.ID); target != nullptr)
+				{
+					target->Type = ButtonType::Star;
+					target->NextID = TimelineTargetID::Null;
+					target->PreviousID = TimelineTargetID::Null;
+				}
+			}
+		}
+
+		void Redo() override
+		{
+			// NOTE: Expects the targets array to be a multiple of 2 in size
+			for (size_t i = 0; i < targets.size() - 1; i++)
+			{
+				TimelineTarget* starTarget = chart.Targets.Find(targets[i].ID);
+				if (!starTarget)
+					continue;
+
+				starTarget->Flags.IsLink = true;
+			}
+			TimelineTarget* lastStar = chart.Targets.Find(targets[targets.size() - 1].ID);
+			if (lastStar)
+				lastStar->Flags.IsLinkEnd = true;
+		}
+
+		Undo::MergeResult TryMerge(Command& command) { return Undo::MergeResult::Failed; }
+	private:
+		Chart& chart;
+		std::vector<TimelineTarget> targets;
+	public:
+		std::string_view GetName() const override { return "Convert Targets to Link Stars"; }
 	};
 }
 

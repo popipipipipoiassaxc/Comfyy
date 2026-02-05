@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <vector>
 #include "BeatTick.h"
@@ -34,7 +34,9 @@ namespace Comfy::Studio::Editor
 	};
 
 	struct EventDataLyric : EventData {
-		std::string Text;
+		std::string_view Lyric = { u8"ダミーリリック" };
+		std::string_view LyricEn = { u8"Dummy Lyric" };
+		u32 Color = 0xFFFFFFFF;
 	};
 
 	struct TimedEvent
@@ -43,8 +45,9 @@ namespace Comfy::Studio::Editor
 		BeatTick StartTick;
 		BeatTick EndTick;
 		EventKind Kind;
+		EventData* Data;
 
-		TimedEvent()
+		TimedEvent() : Data(new EventDataEmpty())
 		{
 			ID = 0;
 			StartTick = BeatTick::FromTicks(0);
@@ -52,7 +55,7 @@ namespace Comfy::Studio::Editor
 			Kind = EventKind::None;
 		}
 
-		TimedEvent(EventKind kind, BeatTick start, BeatTick end) : Kind(kind), StartTick(start), EndTick(end)
+		TimedEvent(EventKind kind, BeatTick start, BeatTick end, EventData* data) : Kind(kind), StartTick(start), EndTick(end), Data(data)
 		{
 			ID = 0;
 		} 
