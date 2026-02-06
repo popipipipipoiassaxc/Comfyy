@@ -880,6 +880,11 @@ namespace Comfy::Studio::Editor
 					target->NextID = TimelineTargetID::Null;
 					target->PreviousID = TimelineTargetID::Null;
 				}
+			}
+		}
+
+		void Redo() override
+		{
 			// NOTE: Expects the targets array to be a multiple of 2 in size
 			for (size_t i = 0; i < targets.size(); i += 2)
 			{

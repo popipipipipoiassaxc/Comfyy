@@ -112,9 +112,6 @@ namespace Comfy::Studio::Editor
 				outTarget.Properties.Amplitude = static_cast<f32>(targetCommand.Parameters.Amplitude);
 				outTarget.Properties.Distance = static_cast<f32>(targetCommand.Parameters.Distance / PVTargetCommandFixedPointPositionFactor);
 				
-				for (auto& target : linkBuffer) {
-
-				}
 			}
 
 			outTargetList.Clear();
@@ -126,7 +123,7 @@ namespace Comfy::Studio::Editor
 				if (outTarget.Flags.IsChain && !outTarget.Flags.IsChainStart)
 					outTarget.Properties.Position.x -= Rules::ChainFragmentStartEndOffsetDistance * (outTarget.Type == ButtonType::SlideL ? -1.0f : +1.0f);
 				//Note:目前的实现并没有考虑多压长条，长条头尾相接等情况，需要考虑重写
-				if (outTarget.Flags.IsLong || outTarget.Flags.IsRush) 
+				if (outTarget.Flags.IsLong || outTarget.Flags.IsRush)
 				{
 					if (StartLongCheck)
 					{
@@ -137,6 +134,23 @@ namespace Comfy::Studio::Editor
 						outTarget.NextID = static_cast<TimelineTargetID>(static_cast<u32>(outTarget.ID) + 1);
 					}
 					StartLongCheck = !StartLongCheck;
+				}
+
+				if (outTarget.Flags.IsLink) {
+					auto prevTarget = outTargetList.Find(static_cast<TimelineTargetID>(static_cast<u32>(outTarget.ID) - 1));
+					auto nextTarget = outTargetList.Find(static_cast<TimelineTargetID>(static_cast<u32>(outTarget.ID) + 1));
+					if (prevTarget && (prevTarget->Flags.IsLink || prevTarget->Flags.IsLinkEnd))
+						outTarget.PreviousID = prevTarget->ID;
+					if (nextTarget && (nextTarget->Flags.IsLinkEnd || nextTarget->Flags.IsLink)) {
+						outTarget.NextID = nextTarget->ID;
+					}
+				}
+				else if (outTarget.Flags.IsLinkEnd) {
+					auto prevTarget = outTargetList.Find(static_cast<TimelineTargetID>(static_cast<u32>(outTarget.ID) - 1));
+					if (prevTarget && (prevTarget->Flags.IsLink)) {
+						outTarget.PreviousID = prevTarget->ID;
+					}
+					outTarget.NextID = TimelineTargetID::Null;
 				}
 			}
 		}
