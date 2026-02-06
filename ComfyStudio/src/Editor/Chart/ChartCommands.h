@@ -916,6 +916,12 @@ namespace Comfy::Studio::Editor
 				if (!starTarget)
 					continue;
 
+				if (i > 0) {
+					starTarget->PreviousID = targets[i - 1].ID;
+				}
+				if (i < targets.size() - 1) {
+					starTarget->NextID = targets[i + 1].ID;
+				}
 				starTarget->Flags.IsLink = true;
 			}
 		}

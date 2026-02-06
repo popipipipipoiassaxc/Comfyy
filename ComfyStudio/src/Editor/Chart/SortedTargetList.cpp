@@ -563,15 +563,8 @@ namespace Comfy::Studio::Editor
 		for (i32 i = 0; i < static_cast<i32>(linkTargetBuffer.size()); i++)
 		{
 			auto* target = linkTargetBuffer[i];
-			auto* nextTarget = (i + 1 < linkTargetBuffer.size()) ? linkTargetBuffer[i + 1] : nullptr;
-			auto* prevTarget = (i - 1 >= 0) ? linkTargetBuffer[i - 1] : nullptr;
-			
-			if (nextTarget != nullptr)
-				if (target->Flags.IsLink && !nextTarget->Flags.IsLink)
-					nextTarget->Flags.IsLinkEnd = true;
+			if (target->NextID == TimelineTargetID::Null && target->Flags.IsLink)
+				target->Flags.IsLinkEnd = true;
 		}
-
-		if (auto& back = *linkTargetBuffer.back(); back.Flags.IsLink)
-			back.Flags.IsLinkEnd = true;
 	}
 }

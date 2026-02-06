@@ -47,6 +47,8 @@ namespace Comfy::Studio::Editor
 			std::vector<TimelineTarget> outTargets;
 			outTargets.reserve(decomposedScript.TargetCommands.size());
 
+			std::vector<TimelineTarget> linkBuffer;
+
 			for (const auto& targetCommand : decomposedScript.TargetCommands)
 			{
 				auto& outTarget = outTargets.emplace_back();
@@ -99,8 +101,8 @@ namespace Comfy::Studio::Editor
 				case PVCommandLayout::TargetType::StarW: { outType = ButtonType::Star; outFlags.IsDouble = true; } break;
 				case PVCommandLayout::TargetType::ChanceStar: { outType = ButtonType::Star; outFlags.IsChance = true; } break;
 
-				case PVCommandLayout::TargetType::LinkStar: { outType = ButtonType::Star; outFlags.IsLink = true; } break;
-				case PVCommandLayout::TargetType::LinkStarEnd: { outType = ButtonType::Star; outFlags.IsLinkEnd = true; } break;
+				case PVCommandLayout::TargetType::LinkStar: { outType = ButtonType::Star; outFlags.IsLink = true; linkBuffer.push_back(outTarget); } break;
+				case PVCommandLayout::TargetType::LinkStarEnd: { outType = ButtonType::Star; outFlags.IsLinkEnd = true; linkBuffer.push_back(outTarget); } break;
 				}
 
 				outTarget.Properties.Position.x = static_cast<f32>(targetCommand.Parameters.PositionX / PVTargetCommandFixedPointPositionFactor);
@@ -110,11 +112,15 @@ namespace Comfy::Studio::Editor
 				outTarget.Properties.Amplitude = static_cast<f32>(targetCommand.Parameters.Amplitude);
 				outTarget.Properties.Distance = static_cast<f32>(targetCommand.Parameters.Distance / PVTargetCommandFixedPointPositionFactor);
 				
+				for (auto& target : linkBuffer) {
+
+				}
 			}
 
 			outTargetList.Clear();
 			outTargetList = std::move(outTargets);
 			auto StartLongCheck = false;
+			auto StartLinkCheck = false;
 			for (auto& outTarget : outTargetList)
 			{
 				if (outTarget.Flags.IsChain && !outTarget.Flags.IsChainStart)

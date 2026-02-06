@@ -625,12 +625,12 @@ namespace Comfy::Studio::Editor
 						buttonData.Long = targetData.Long;
 						buttonData.Rush = targetData.Rush;
 						buttonData.Shadow = TargetRenderHelper::ButtonShadowType::Black;
-						auto& prevTarget = targets[idx - 1];
+						auto* prevTarget = workingChart->Targets.Find(target.PreviousID);
 						bool linkMovement = false;
-						if ((target.Flags.IsLink || target.Flags.IsLinkEnd) && prevTarget.Flags.IsLink) {
-							auto prevProperties = Rules::TryGetProperties(prevTarget);
+						if ((target.Flags.IsLink || target.Flags.IsLinkEnd) && prevTarget && prevTarget->Flags.IsLink) {
+							auto prevProperties = Rules::TryGetProperties(*prevTarget);
 
-							auto [prTargetTime, prButtonTime, prTargetTick, prButtonTick, prFlyingTime, prRealbpm] = workingChart->TempoMap.GetTargetSpawnTimes(prevTarget);
+							auto [prTargetTime, prButtonTime, prTargetTick, prButtonTick, prFlyingTime, prRealbpm] = workingChart->TempoMap.GetTargetSpawnTimes(*prevTarget);
 
 							const auto linkProgressUnbound = static_cast<f32>(ConvertRange(prButtonTime.TotalSeconds(), buttonTime.TotalSeconds(), 0.0, 1.0, cursorTime.TotalSeconds()));
 							const auto linkProgress = Clamp(linkProgressUnbound, 0.0f, 1.0f);
