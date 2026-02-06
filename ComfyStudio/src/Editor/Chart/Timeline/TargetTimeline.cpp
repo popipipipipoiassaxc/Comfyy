@@ -1214,6 +1214,33 @@ namespace Comfy::Studio::Editor
 			renderHelper.DrawTargetLine(windowDrawList, target.Type, startCenter, endCenter, startScale * endScale, startOpacity * endOpacity);
 		}
 
+		// NOTE: Draw link note connection indicators
+		for (const auto& target : workingChart->Targets)
+		{
+			if (!target.Flags.IsLink)
+				continue;
+
+			if (target.NextID == TimelineTargetID::Null)
+				continue;
+
+			i32 nextIndex = workingChart->Targets.FindIndex(target.NextID);
+			if (nextIndex == -1)
+				continue;
+
+			const auto& nextTarget = workingChart->Targets[nextIndex];
+
+			vec2 startCenter, endCenter;
+			f32 startScale, endScale;
+			f32 startOpacity, endOpacity;
+			bool startVisible = CalculateTargetDrawParam(target, &startCenter, &startScale, &startOpacity);
+			bool endVisible = CalculateTargetDrawParam(nextTarget, &endCenter, &endScale, &endOpacity);
+			if (!startVisible && !endVisible)
+				continue;
+
+			//windowDrawList->AddLine(startCenter, endCenter, IM_COL32_WHITE, 4.0f);
+			renderHelper.DrawLinkLine(windowDrawList, target.Type, startCenter, endCenter, startScale * endScale, startOpacity * endOpacity);
+		}
+
 		for (const auto& target : workingChart->Targets)
 		{
 			vec2 center;

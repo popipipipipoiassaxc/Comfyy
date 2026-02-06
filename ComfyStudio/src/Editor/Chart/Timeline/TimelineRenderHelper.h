@@ -12,6 +12,7 @@ namespace Comfy::Studio::Editor
 		void OnEditorSpritesLoaded(const Graphics::SprSet* sprSet);
 		void DrawButtonIcon(ImDrawList* drawList, const TimelineTarget& target, vec2 position, f32 scale, f32 transparency = 1.0f) const;
 		void DrawTargetLine(ImDrawList* drawList, ButtonType type, vec2 startPos, vec2 endPos, f32 scale, f32 opacity) const;
+		void DrawLinkLine(ImDrawList* drawList, ButtonType type, vec2 startPos, vec2 endPos, f32 scale, f32 opacity) const;
 
 	private:
 		const Graphics::Spr* GetButtonSpriteForTarget(const TimelineTarget& target) const;
@@ -42,7 +43,7 @@ namespace Comfy::Studio::Editor
 
 			const Graphics::Spr *RushText;
 
-			const Graphics::Spr *TargetLine, *TargetLineYellow;
+			const Graphics::Spr *TargetLine, *TargetLineYellow, *TargetLineLink;
 
 			const Graphics::Spr *ButtonIconStarLink;
 		} sprites = {};

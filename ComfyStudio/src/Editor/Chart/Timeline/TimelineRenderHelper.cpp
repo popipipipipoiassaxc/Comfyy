@@ -64,6 +64,7 @@ namespace Comfy::Studio::Editor
 
 		sprites.TargetLine = findSprite("TARGET_LINE");
 		sprites.TargetLineYellow = findSprite("TARGET_LINE_YELLOW");
+		sprites.TargetLineLink = findSprite("TARGET_LINE_LINK");
 
 		sprites.ButtonIconStarLink = findSprite("TIMELINE_STAR_LINK");
 
@@ -153,6 +154,55 @@ namespace Comfy::Studio::Editor
 		const float height = 18.0f * scale;
 
 		const auto* spr = type == ButtonType::Star ? sprites.TargetLineYellow : sprites.TargetLine;
+		const auto& tex = editorSprites->TexSet.Textures[spr->TextureIndex];
+
+		const vec2 uv0 = vec2(spr->TexelRegion.x, 1.0f - spr->TexelRegion.w);
+		const vec2 uv1 = vec2(spr->TexelRegion.x, 1.0f - spr->TexelRegion.y);
+		const vec2 uv2 = vec2(spr->TexelRegion.z, 1.0f - spr->TexelRegion.y);
+		const vec2 uv3 = vec2(spr->TexelRegion.z, 1.0f - spr->TexelRegion.w);
+
+		ImU32 color = 0xFFFFFFFF;
+		switch (type)
+		{
+		case ButtonType::Triangle:
+			color = IM_COL32(0, 230, 128, static_cast<i32>(opacity * 255));
+			break;
+		case ButtonType::Square:
+			color = IM_COL32(240, 147, 226, static_cast<i32>(opacity * 255));
+			break;
+		case ButtonType::Cross:
+			color = IM_COL32(63, 152, 255, static_cast<i32>(opacity * 255));
+			break;
+		case ButtonType::Circle:
+			color = IM_COL32(255, 84, 92, static_cast<i32>(opacity * 255));
+		}
+
+		// NOTE: This is probably *veeeeery* unefficient because of the many draw calls
+		//       for a single line, but using repeat UVs would require editing the sprite
+		//       and textures are a lot more stuff for it to properly repeat and like... eh.
+		//       I guess this is good enough.
+		float drawnWidth = 0.0f;
+		while (drawnWidth < width)
+		{
+			const vec2 topLeft = vec2(startPos.x + drawnWidth, startPos.y - height / 2.0f);
+			const vec2 topRight = vec2(startPos.x + drawnWidth + 2.0f, endPos.y - height / 2.0f);
+			const vec2 bottomLeft = vec2(startPos.x + drawnWidth, startPos.y + height / 2.0f);
+			const vec2 bottomRight = vec2(startPos.x + drawnWidth + 2.0f, endPos.y + height / 2.0f);
+
+			drawList->AddImageQuad(*tex, bottomLeft, topLeft, topRight, bottomRight, uv0, uv1, uv2, uv3, color);
+			drawnWidth += 2.0f;
+		}
+	}
+
+	void TimelineRenderHelper::DrawLinkLine(ImDrawList* drawList, ButtonType type, vec2 startPos, vec2 endPos, f32 scale, f32 opacity) const
+	{
+		if (sprites.TargetLine == nullptr || sprites.TargetLineYellow == nullptr)
+			return;
+
+		const float width  = endPos.x - startPos.x;
+		const float height = 18.0f * scale;
+
+		const auto* spr = sprites.TargetLineLink;
 		const auto& tex = editorSprites->TexSet.Textures[spr->TextureIndex];
 
 		const vec2 uv0 = vec2(spr->TexelRegion.x, 1.0f - spr->TexelRegion.w);
