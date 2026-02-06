@@ -2279,6 +2279,12 @@ namespace Comfy::Studio::Editor
 			if (Gui::MenuItem("Toggle Target Chance", Input::ToString(GlobalUserData.Input.TargetTimeline_ToggleTargetChance).data(), nullptr, anyChanceToggableTargetSelected))
 				ToggleSelectedTargetsChance(undoManager, *workingChart);
 
+			auto isTargetSelectedAndDoubleToggable = [](const TimelineTarget& t) -> bool { return t.IsSelected && !IsSlideButtonType(t.Type); };
+			const bool anyDoubleToggableTargetSelected = (selectionCount > 0) && std::any_of(workingChart->Targets.begin(), workingChart->Targets.end(), isTargetSelectedAndDoubleToggable);
+
+			if (Gui::MenuItem("Toggle Target Double", Input::ToString(GlobalUserData.Input.TargetTimeline_ToggleTargetDoubles).data(), nullptr, anyChanceToggableTargetSelected))
+				ToggleSelectedTargetsDoubles(undoManager, *workingChart);
+
 			auto isSelectionConvertableToLong = [&]()
 			{
 				if (selectionCount % 2 != 0)
