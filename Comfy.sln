@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36221.1 d17.14
+VisualStudioVersion = 17.14.36221.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ComfyStudio", "ComfyStudio\ComfyStudio.vcxproj", "{7225CA33-8C76-4169-B50E-537DE61175F2}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -57,6 +57,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libvorbisenc", "Dependencie
 		{A3E42197-D88A-4324-846A-3F73832CF099} = {A3E42197-D88A-4324-846A-3F73832CF099}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libresample", "Dependencies\libresample\win\libresample.vcxproj", "{F00717F2-67C8-44E1-AF00-541DFA9CB7F2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -107,6 +109,10 @@ Global
 		{DBEDF9CC-73E6-41DE-905A-48B2D8B0435D}.Debug|x64.Build.0 = Debug|x64
 		{DBEDF9CC-73E6-41DE-905A-48B2D8B0435D}.Release|x64.ActiveCfg = Release|x64
 		{DBEDF9CC-73E6-41DE-905A-48B2D8B0435D}.Release|x64.Build.0 = Release|x64
+		{F00717F2-67C8-44E1-AF00-541DFA9CB7F2}.Debug|x64.ActiveCfg = Debug|Win32
+		{F00717F2-67C8-44E1-AF00-541DFA9CB7F2}.Debug|x64.Build.0 = Debug|Win32
+		{F00717F2-67C8-44E1-AF00-541DFA9CB7F2}.Release|x64.ActiveCfg = Release|x64
+		{F00717F2-67C8-44E1-AF00-541DFA9CB7F2}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -119,6 +125,7 @@ Global
 		{03AFDB81-1811-45D4-B308-B6786D643F9B} = {5BFD0E19-85BC-4152-8040-DF48D951056B}
 		{80517DC0-72E5-4C7E-B0D4-08D94E242EAB} = {5BFD0E19-85BC-4152-8040-DF48D951056B}
 		{DBEDF9CC-73E6-41DE-905A-48B2D8B0435D} = {5BFD0E19-85BC-4152-8040-DF48D951056B}
+		{F00717F2-67C8-44E1-AF00-541DFA9CB7F2} = {5BFD0E19-85BC-4152-8040-DF48D951056B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FFA01E7C-932B-47BA-90FC-DB04C53BE51F}
