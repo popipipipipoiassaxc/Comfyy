@@ -60,6 +60,7 @@ namespace Comfy::Studio::Editor
 
 			EncoderOptions options = {};
 			options.VBRQuality = vbrQuality;
+			options.SampleRate = 44100;
 
 			EncoderCallbacks callbacks = {};
 			callbacks.OnSamplesEncoded = [&outProgress](const EncoderCallbackProgressStatus& progressStatus)

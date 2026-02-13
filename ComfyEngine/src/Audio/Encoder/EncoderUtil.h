@@ -41,6 +41,7 @@ namespace Comfy::Audio
 	struct EncoderOptions
 	{
 		f32 VBRQuality;
+		i32 SampleRate;
 		std::vector<VorbisComment> Comments;
 	};
 

@@ -2,6 +2,7 @@
 #include "Audio/Core/AudioEngine.h"
 #include <vorbis/codec.h>
 #include <vorbis/vorbisenc.h>
+#include <libresample.h>
 #include <time.h>
 
 namespace Comfy::Audio
@@ -65,7 +66,6 @@ namespace Comfy::Audio
 		// NOTE: Pick a random serial number; that way we can more likely build chained streams just by concatenation
 		srand(static_cast<int>(time(nullptr)));
 		ogg_stream_init(&oggStreamState, rand());
-
 		{
 			// NOTE: Vorbis streams begin with three headers; the initial header (with most of the codec setup parameters) which is mandated by the Ogg bitstream spec.
 			//		 The second header holds any comment fields. The third header holds the bitstream codebook.
