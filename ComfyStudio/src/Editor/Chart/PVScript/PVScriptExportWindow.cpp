@@ -272,7 +272,7 @@ namespace Comfy::Studio::Editor
 				else if (lyrics)
 				{
 					scriptBuilder.Add(startTime, PVCommandLayout::Lyric(lyricIndex, -1));
-					scriptBuilder.Add(endTime, PVCommandLayout::Lyric(0, -1));
+					scriptBuilder.Add(endTime, PVCommandLayout::Lyric(-1, -1));
 				}
 			}
 
@@ -592,8 +592,25 @@ namespace Comfy::Studio::Editor
 				pvDB.append(b, sprintf_s(b, "pv_%03d.hidden_timing=0.3\n", inParam.OutPVID));
 				pvDB.append(b, sprintf_s(b, "pv_%03d.high_speed_rate=4\n", inParam.OutPVID));
 
-				// TODO: Add Lyric Exporting
-				pvDB.append(b, sprintf_s(b, "pv_%03d.lyric.%03d=%s\n", inParam.OutPVID, 0, "DUMMY_LYRICS"));
+				bool LyricsAdded = false;
+				int lyricId = 1;
+				for (auto& event : inData.Chart->Events) {
+					if (event.Kind == EventKind::Lyrics) {
+						pvDB.append(b, sprintf_s(b, "pv_%03d.lyric.%03d=%s\n", inParam.OutPVID, lyricId, static_cast<EventDataLyric*>(event.Data)->Lyric.data()));
+						lyricId++;
+						LyricsAdded = true;
+					}
+				}
+				lyricId = 1;
+				for (auto& event : inData.Chart->Events) {
+					if (event.Kind == EventKind::Lyrics) {
+						pvDB.append(b, sprintf_s(b, "pv_%03d.lyric_en.%03d=%s\n", inParam.OutPVID, lyricId, static_cast<EventDataLyric*>(event.Data)->LyricEn.data()));
+						lyricId++;
+						LyricsAdded = true;
+					}
+				}
+				if (!LyricsAdded)
+					pvDB.append(b, sprintf_s(b, "pv_%03d.lyric.%03d=%s\n", inParam.OutPVID, 0, "DUMMY_LYRICS"));
 				pvDB.append(b, sprintf_s(b, "pv_%03d.motion.01=CMN_POSE_DEFAULT_T\n", inParam.OutPVID));
 
 				if (!inParam.OutMovie.empty())

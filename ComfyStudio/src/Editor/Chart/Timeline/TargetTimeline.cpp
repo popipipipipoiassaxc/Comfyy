@@ -1473,7 +1473,7 @@ namespace Comfy::Studio::Editor
 				secondaryColor = 0xFF146BF7;
 				break;
 			case EventKind::Lyrics:
-				EventDataLyric* lyricData = (EventDataLyric*)(event.Data);
+				EventDataLyric* lyricData = static_cast<EventDataLyric*>(event.Data);
 				sprintf_s(nameBuffer, "%.30s / %.30s", lyricData->Lyric.data(), lyricData->LyricEn.data());
 				color = 0x40777777;
 				secondaryColor = 0xFFF0F0F0;
@@ -2500,7 +2500,7 @@ namespace Comfy::Studio::Editor
 				if (event.Kind == EventKind::Lyrics) {
 					workingEventID = rightClickHoveredEventID;
 
-					// Gui::OpenPopup("##LyricEditPopup", ImGuiPopupFlags_AnyPopupLevel);
+					Gui::OpenPopup("##LyricEditPopup", ImGuiPopupFlags_AnyPopupLevel | ImGuiCond_Appearing);
 				}
 			}
 
@@ -2517,11 +2517,15 @@ namespace Comfy::Studio::Editor
 		TimedEvent& event = workingChart->Events[workingChart->Events.FindIndex(workingEventID)];
 
 		if (event.Kind == EventKind::Lyrics) {
-			/*if (Gui::Begin("##LyricEditPopup")) {
-				Gui::Text("JP Lyric: (editor)");
-				Gui::Text("EN Lyric: (editor)");
-				Gui::End();
-			}*/
+			Gui::SetNextWindowPos(ImVec2(15,15), ImGuiCond_Appearing);
+			Gui::SetNextWindowSize(ImVec2(500,100), ImGuiCond_Always);
+
+			if (Gui::WideBeginPopup("##LyricEditPopup", ImGuiWindowFlags_AlwaysAutoResize)) {
+				auto data = static_cast<EventDataLyric*>(event.Data);
+				Gui::InputText("Japanese", &data->Lyric);
+				Gui::InputText("English", &data->LyricEn);
+				Gui::EndPopup();
+			}
 		}
 	}
 

@@ -34,8 +34,8 @@ namespace Comfy::Studio::Editor
 	};
 
 	struct EventDataLyric : EventData {
-		std::string_view Lyric = { u8"ダミーリリック" };
-		std::string_view LyricEn = { u8"Dummy Lyric" };
+		std::string Lyric = { u8"ダミーリリック" };
+		std::string LyricEn = { u8"Dummy Lyric" };
 		u32 Color = 0xFFFFFFFF;
 	};
 

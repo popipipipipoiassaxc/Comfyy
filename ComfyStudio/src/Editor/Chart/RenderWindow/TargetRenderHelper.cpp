@@ -666,7 +666,7 @@ namespace Comfy::Studio::Editor
 					if (hud.PlaybackTick >= ev->StartTick && hud.PlaybackTick <= ev->EndTick)
 					{
 						if (const auto* font = GetFont36(); font != nullptr) {
-							EventDataLyric* lyricData = (EventDataLyric*)(ev->Data);
+							EventDataLyric* lyricData = static_cast<EventDataLyric*>(ev->Data);
 							renderer.Font().DrawBorder(*font, lyricData->Lyric, TryGetTransform(layers.LyricText, playbackFrame));
 						}
 					}
