@@ -15,20 +15,18 @@ jobs:
       - name: Configurar MSBuild
         uses: microsoft/setup-msbuild@v2
 
-      - name: Criar pasta data no ComfyData
-        run: New-Item -ItemType Directory -Force -Path "ComfyData\data"
-
-      - name: 1. Compilar ComfyData e ler argumentos
+      - name: 1. Compilar e Empacotar ComfyData
         run: |
           $solDir = (Get-Location).Path + "\"
           $proj = Get-ChildItem -Path "ComfyData" -Recurse -Filter "*.vcxproj" | Select-Object -First 1
           msbuild $proj.FullName /p:Configuration=Release /p:Platform=x64 /p:SolutionDir="$solDir"
-          Get-Content "ComfyData\src\ComfyDataBuild.cpp" | Select-Object -Last 80
           $exe = Get-ChildItem -Path "ComfyData" -Recurse -Filter "*.exe" | Select-Object -First 1
-          if ($exe) {
-            & $exe.FullName
-            $global:LASTEXITCODE = 0
+          New-Item -ItemType Directory -Force -Path "ComfyData\data"
+          Get-ChildItem -Path "ComfyData\data-src-sprset" -Directory | ForEach-Object {
+            & $exe.FullName -build_sprset $_.FullName "ComfyData\data-src"
           }
+          & $exe.FullName -build_comfy_data "ComfyData\data-src" "ComfyData\data\comfy_data.bin"
+          Get-ChildItem -Path "ComfyData\data"
 
       - name: 2. Compilar ComfyVersion
         run: |
@@ -42,15 +40,15 @@ jobs:
           $proj = Get-ChildItem -Path "ComfyStudio" -Recurse -Filter "*.vcxproj" | Select-Object -First 1
           msbuild $proj.FullName /p:Configuration=Release /p:Platform=x64 /p:SolutionDir="$solDir"
 
-      - name: 4. Procurar arquivos exigidos para Linked Stars
+      - name: 4. Listar arquivos de estrela exigidos no dev_rom
         run: |
-          Get-ChildItem -Path "ComfyStudio\src" -Recurse -Include *.cpp,*.h | Select-String -Pattern "Linked|Star|f2|dev_rom" | Select-Object -First 80
+          Get-ChildItem -Path "ComfyStudio\src" -Recurse -Include *.cpp,*.h | Select-String -Pattern "aet_gam|spr_gam|LinkedStar|StarLink|f2_" | Select-Object -First 80
 
       - name: Salvar executável e arquivos gerados
         uses: actions/upload-artifact@v4
         with:
           name: ComfyStudio-Build
           path: |
-            **/bin/x64-Release/*.exe
-            **/bin/x64-Release/*.dll
+            ComfyStudio/bin/x64-Release/*.exe
+            ComfyStudio/bin/x64-Release/*.dll
             ComfyData/data/*
