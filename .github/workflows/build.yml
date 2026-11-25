@@ -19,19 +19,25 @@ jobs:
         run: New-Item -ItemType Directory -Force -Path "ComfyData\data"
 
       - name: 1. Compilar ComfyData
-        run: msbuild ComfyData\ComfyData.vcxproj /p:Configuration=Release /p:Platform=x64
+        run: |
+          $proj = Get-ChildItem -Path "ComfyData" -Recurse -Filter "*.vcxproj" | Select-Object -First 1
+          msbuild $proj.FullName /p:Configuration=Release /p:Platform=x64
 
       - name: 2. Compilar ComfyVersion
-        run: msbuild ComfyVersion\ComfyVersion.vcxproj /p:Configuration=Release /p:Platform=x64
+        run: |
+          $proj = Get-ChildItem -Path "ComfyVersion" -Recurse -Filter "*.vcxproj" | Select-Object -First 1
+          msbuild $proj.FullName /p:Configuration=Release /p:Platform=x64
 
       - name: 3. Compilar ComfyStudio
-        run: msbuild ComfyStudio\ComfyStudio.vcxproj /p:Configuration=Release /p:Platform=x64
+        run: |
+          $proj = Get-ChildItem -Path "ComfyStudio" -Recurse -Filter "*.vcxproj" | Select-Object -First 1
+          msbuild $proj.FullName /p:Configuration=Release /p:Platform=x64
 
       - name: Salvar executável e arquivos gerados
         uses: actions/upload-artifact@v4
         with:
           name: ComfyStudio-Build
           path: |
-            ComfyStudio/bin/x64-Release/*.exe
-            ComfyStudio/bin/x64-Release/*.dll
+            **/bin/x64-Release/*.exe
+            **/bin/x64-Release/*.dll
             ComfyData/data/*
