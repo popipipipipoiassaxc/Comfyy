@@ -25,7 +25,6 @@ jobs:
           msbuild $proj.FullName /p:Configuration=Release /p:Platform=x64 /p:SolutionDir="$solDir"
           $exe = Get-ChildItem -Path "ComfyData" -Recurse -Filter "*.exe" | Select-Object -First 1
           if ($exe) {
-            Set-Location "ComfyData"
             & $exe.FullName
           }
 
