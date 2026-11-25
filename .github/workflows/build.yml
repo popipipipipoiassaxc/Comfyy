@@ -18,11 +18,16 @@ jobs:
       - name: Criar pasta data no ComfyData
         run: New-Item -ItemType Directory -Force -Path "ComfyData\data"
 
-      - name: 1. Compilar ComfyData
+      - name: 1. Compilar e Executar ComfyData
         run: |
           $solDir = (Get-Location).Path + "\"
           $proj = Get-ChildItem -Path "ComfyData" -Recurse -Filter "*.vcxproj" | Select-Object -First 1
           msbuild $proj.FullName /p:Configuration=Release /p:Platform=x64 /p:SolutionDir="$solDir"
+          $exe = Get-ChildItem -Path "ComfyData" -Recurse -Filter "*.exe" | Select-Object -First 1
+          if ($exe) {
+            Set-Location "ComfyData"
+            & $exe.FullName
+          }
 
       - name: 2. Compilar ComfyVersion
         run: |
@@ -35,6 +40,10 @@ jobs:
           $solDir = (Get-Location).Path + "\"
           $proj = Get-ChildItem -Path "ComfyStudio" -Recurse -Filter "*.vcxproj" | Select-Object -First 1
           msbuild $proj.FullName /p:Configuration=Release /p:Platform=x64 /p:SolutionDir="$solDir"
+
+      - name: 4. Procurar arquivos exigidos para Linked Stars
+        run: |
+          Get-ChildItem -Path "ComfyStudio\src" -Recurse -Include *.cpp,*.h | Select-String -Pattern "Linked|Star|f2|dev_rom" | Select-Object -First 80
 
       - name: Salvar executável e arquivos gerados
         uses: actions/upload-artifact@v4
