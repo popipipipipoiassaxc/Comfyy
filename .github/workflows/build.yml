@@ -15,6 +15,11 @@ jobs:
       - name: Configurar MSBuild
         uses: microsoft/setup-msbuild@v2
 
+      - name: Corrigir build.bat ausente
+        run: |
+          New-Item -ItemType Directory -Force -Path "ComfyVersion\build"
+          Set-Content -Path "ComfyVersion\build\build.bat" -Value "@echo off"
+
       - name: Compilar Projeto
         run: msbuild Comfy.sln /p:Configuration=Release /p:Platform=x64
 
@@ -23,5 +28,5 @@ jobs:
         with:
           name: ComfyStudio-Build
           path: |
-            **/Release/*.exe
-            **/Release/*.dll
+            **/bin/x64-Release/*.exe
+            **/bin/x64-Release/*.dll
