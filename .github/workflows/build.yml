@@ -18,17 +18,16 @@ jobs:
       - name: Criar pasta data no ComfyData
         run: New-Item -ItemType Directory -Force -Path "ComfyData\data"
 
-      - name: 1. Compilar e Executar ComfyData
+      - name: 1. Compilar ComfyData e ler argumentos
         run: |
           $solDir = (Get-Location).Path + "\"
           $proj = Get-ChildItem -Path "ComfyData" -Recurse -Filter "*.vcxproj" | Select-Object -First 1
           msbuild $proj.FullName /p:Configuration=Release /p:Platform=x64 /p:SolutionDir="$solDir"
-          Get-Content "ComfyData\src\ComfyDataBuild.cpp" | Select-Object -First 60
+          Get-Content "ComfyData\src\ComfyDataBuild.cpp" | Select-Object -Last 80
           $exe = Get-ChildItem -Path "ComfyData" -Recurse -Filter "*.exe" | Select-Object -First 1
           if ($exe) {
-            Push-Location $exe.DirectoryName
             & $exe.FullName
-            Pop-Location
+            $global:LASTEXITCODE = 0
           }
 
       - name: 2. Compilar ComfyVersion
